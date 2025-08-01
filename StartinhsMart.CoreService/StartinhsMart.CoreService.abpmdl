@@ -1,0 +1,105 @@
+{
+  "template": "app",
+  "imports": {
+    "Volo.Abp.LeptonXLiteTheme": {
+      "version": "4.0.5",
+      "isInstalled": true
+    },
+    "Volo.Abp.Account": {
+      "version": "9.0.4",
+      "isInstalled": true
+    },
+    "Volo.Abp.OpenIddict": {
+      "version": "9.0.4",
+      "isInstalled": true
+    },
+    "Volo.Abp.Identity": {
+      "version": "9.0.4",
+      "isInstalled": true
+    },
+    "Volo.Abp.TenantManagement": {
+      "version": "9.0.4",
+      "isInstalled": true
+    },
+    "Volo.Abp.SettingManagement": {
+      "version": "9.0.4",
+      "isInstalled": true
+    },
+    "Volo.Abp.PermissionManagement": {
+      "version": "9.0.4",
+      "isInstalled": true
+    },
+    "Volo.Abp.FeatureManagement": {
+      "version": "9.0.4",
+      "isInstalled": true
+    }
+  },
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "StartinhsMart.CoreService.Application": {
+      "path": "src/StartinhsMart.CoreService.Application/StartinhsMart.CoreService.Application.abppkg",
+      "folder": "src"
+    },
+    "StartinhsMart.CoreService.Application.Tests": {
+      "path": "test/StartinhsMart.CoreService.Application.Tests/StartinhsMart.CoreService.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "StartinhsMart.CoreService.Domain.Shared": {
+      "path": "src/StartinhsMart.CoreService.Domain.Shared/StartinhsMart.CoreService.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "StartinhsMart.CoreService.Application.Contracts": {
+      "path": "src/StartinhsMart.CoreService.Application.Contracts/StartinhsMart.CoreService.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "StartinhsMart.CoreService.HttpApi": {
+      "path": "src/StartinhsMart.CoreService.HttpApi/StartinhsMart.CoreService.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "StartinhsMart.CoreService.HttpApi.Client": {
+      "path": "src/StartinhsMart.CoreService.HttpApi.Client/StartinhsMart.CoreService.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "StartinhsMart.CoreService.EntityFrameworkCore.Tests": {
+      "path": "test/StartinhsMart.CoreService.EntityFrameworkCore.Tests/StartinhsMart.CoreService.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "StartinhsMart.CoreService.EntityFrameworkCore": {
+      "path": "src/StartinhsMart.CoreService.EntityFrameworkCore/StartinhsMart.CoreService.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "StartinhsMart.CoreService.TestBase": {
+      "path": "test/StartinhsMart.CoreService.TestBase/StartinhsMart.CoreService.TestBase.abppkg",
+      "folder": "test"
+    },
+    "StartinhsMart.CoreService.Domain.Tests": {
+      "path": "test/StartinhsMart.CoreService.Domain.Tests/StartinhsMart.CoreService.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "StartinhsMart.CoreService.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/StartinhsMart.CoreService.HttpApi.Client.ConsoleTestApp/StartinhsMart.CoreService.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "StartinhsMart.CoreService.DbMigrator": {
+      "path": "src/StartinhsMart.CoreService.DbMigrator/StartinhsMart.CoreService.DbMigrator.abppkg",
+      "folder": "src"
+    },
+    "StartinhsMart.CoreService.Blazor": {
+      "path": "src/StartinhsMart.CoreService.Blazor/StartinhsMart.CoreService.Blazor.abppkg",
+      "folder": "src"
+    },
+    "StartinhsMart.CoreService.Blazor.Client": {
+      "path": "src/StartinhsMart.CoreService.Blazor.Client/StartinhsMart.CoreService.Blazor.Client.abppkg",
+      "folder": "src"
+    },
+    "StartinhsMart.CoreService.Domain": {
+      "path": "src/StartinhsMart.CoreService.Domain/StartinhsMart.CoreService.Domain.abppkg",
+      "folder": "src"
+    }
+  }
+}
