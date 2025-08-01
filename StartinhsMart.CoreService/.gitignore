@@ -265,6 +265,7 @@ src/StartinhsMart.CoreService.HttpApi.HostWithIds/Logs/*
 src/StartinhsMart.CoreService.DbMigrator/Logs/*
 src/StartinhsMart.CoreService.Blazor.Server/Logs/*
 src/StartinhsMart.CoreService.Blazor.Server.Tiered/Logs/*
+src/StartinhsMart.CoreService.Blazor/Logs/*
 
 # Use abp install-libs to restore.
 **/wwwroot/libs/*
