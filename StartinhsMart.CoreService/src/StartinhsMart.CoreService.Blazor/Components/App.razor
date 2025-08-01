@@ -16,11 +16,14 @@
     <title>CoreService</title>
     <base href="/" />
     
-    <AbpStyles BundleName="@BlazorLeptonXLiteThemeBundles.Styles.Global" WebAssemblyStyleFiles="GlobalStyles" @rendermode="InteractiveAuto" />
+    @* <AbpStyles BundleName="@BlazorLeptonXLiteThemeBundles.Styles.Global" WebAssemblyStyleFiles="GlobalStyles" @rendermode="InteractiveAuto" />
     
-    <HeadOutlet @rendermode="InteractiveAuto" />
+    <HeadOutlet @rendermode="InteractiveAuto" /> *@
 
-    
+    <AbpStyles BundleName="@BlazorLeptonXLiteThemeBundles.Styles.Global" @rendermode="InteractiveServer" />
+
+    <HeadOutlet @rendermode="InteractiveServer" />
+
 </head>
 <body class="abp-application-layout @rtl">
 
@@ -39,14 +42,16 @@
         <a class="dismiss">🗙</a>
     </div>
     
-    <AbpScripts BundleName="@BlazorLeptonXLiteThemeBundles.Scripts.Global" WebAssemblyScriptFiles="GlobalScripts" @rendermode="InteractiveAuto" />
+    @* <AbpScripts BundleName="@BlazorLeptonXLiteThemeBundles.Scripts.Global" WebAssemblyScriptFiles="GlobalScripts" @rendermode="InteractiveAuto" /> *@
+
+    <AbpScripts BundleName="@BlazorLeptonXLiteThemeBundles.Scripts.Global" @rendermode="InteractiveServer" />
 
     <script src="_framework/blazor.web.js"></script>
 
 </body>
 </html>
 
-@code{
+@* @code{
     private List<string> GlobalStyles =>
     [
         "global.css",
@@ -58,4 +63,4 @@
     [
         "global.js"
     ];
-}
+} *@
