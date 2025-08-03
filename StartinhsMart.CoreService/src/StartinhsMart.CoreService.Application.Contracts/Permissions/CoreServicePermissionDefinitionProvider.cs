@@ -11,6 +11,9 @@ public class CoreServicePermissionDefinitionProvider : PermissionDefinitionProvi
     {
         var myGroup = context.AddGroup(CoreServicePermissions.GroupName);
 
+        myGroup.AddPermission(CoreServicePermissions.Dashboard.Host, L("Permission:Dashboard"), MultiTenancySides.Host);
+        myGroup.AddPermission(CoreServicePermissions.Dashboard.Tenant, L("Permission:Dashboard"), MultiTenancySides.Tenant);
+
         //Define your own permissions here. Example:
         //myGroup.AddPermission(CoreServicePermissions.MyPermission1, L("Permission:MyPermission1"));
     }

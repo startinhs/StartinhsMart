@@ -15,11 +15,15 @@ using Volo.Abp.Autofac.WebAssembly;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Modularity;
 using Volo.Abp.UI.Navigation;
-using Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme;
+using StartinhsMart.CoreService.Blazor.Client.Components.Layout;
+using Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXTheme;
+using Volo.Abp.AspNetCore.Components.Web.LeptonXTheme;
+using Volo.Abp.LeptonX.Shared;
 using Volo.Abp.SettingManagement.Blazor.WebAssembly;
 using Volo.Abp.FeatureManagement.Blazor.WebAssembly;
-using Volo.Abp.TenantManagement.Blazor.WebAssembly;
-using Volo.Abp.Identity.Blazor.WebAssembly;
+using Volo.Abp.Account.Pro.Admin.Blazor.WebAssembly;
+using Volo.Abp.Identity.Pro.Blazor.Server.WebAssembly;
+using Volo.Saas.Host.Blazor.WebAssembly;
 
 
 namespace StartinhsMart.CoreService.Blazor.Client;
@@ -27,9 +31,10 @@ namespace StartinhsMart.CoreService.Blazor.Client;
 [DependsOn(
     typeof(AbpSettingManagementBlazorWebAssemblyModule),
     typeof(AbpFeatureManagementBlazorWebAssemblyModule),
-    typeof(AbpAspNetCoreComponentsWebAssemblyLeptonXLiteThemeModule),
-    typeof(AbpIdentityBlazorWebAssemblyModule),
-    typeof(AbpTenantManagementBlazorWebAssemblyModule),
+    typeof(AbpAspNetCoreComponentsWebAssemblyLeptonXThemeModule),
+    typeof(AbpAccountAdminBlazorWebAssemblyModule),
+    typeof(AbpIdentityProBlazorWebAssemblyModule),
+    typeof(SaasHostBlazorWebAssemblyModule),
     typeof(AbpAutofacWebAssemblyModule),
     typeof(CoreServiceHttpApiClientModule)
 )]
@@ -54,8 +59,16 @@ public class CoreServiceBlazorClientModule : AbpModule
         ConfigureRouter(context);
         ConfigureMenu(context);
         ConfigureAutoMapper(context);
+        ConfigureTheme();
     }
 
+    private void ConfigureTheme()
+    {
+        Configure<LeptonXThemeOptions>(options =>
+        {
+            options.DefaultStyle = LeptonXStyleNames.System;
+        });
+    }
 
     private void ConfigureRouter(ServiceConfigurationContext context)
     {

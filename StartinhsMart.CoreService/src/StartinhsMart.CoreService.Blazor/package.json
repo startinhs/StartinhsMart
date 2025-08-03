@@ -3,7 +3,8 @@
   "name": "my-app",
   "private": true,
   "dependencies": {
-    "@abp/aspnetcore.mvc.ui.theme.leptonxlite": "~4.0.5",
-    "@abp/aspnetcore.components.server.leptonxlitetheme": "~4.0.5"
+    "@volo/account": "~9.0.4",
+    "@volo/abp.aspnetcore.mvc.ui.theme.leptonx": "~4.0.5",
+    "@volo/aspnetcore.components.server.leptonxtheme": "~4.0.5"
   }
 }

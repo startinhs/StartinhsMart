@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.BlobStoring.Database.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -12,18 +11,19 @@ using Volo.Abp.Identity.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
-using Volo.Abp.TenantManagement;
-using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Volo.Saas.EntityFrameworkCore;
+using Volo.Saas.Editions;
+using Volo.Saas.Tenants;
 
 namespace StartinhsMart.CoreService.EntityFrameworkCore;
 
-[ReplaceDbContext(typeof(IIdentityDbContext))]
-[ReplaceDbContext(typeof(ITenantManagementDbContext))]
+[ReplaceDbContext(typeof(IIdentityProDbContext))]
+[ReplaceDbContext(typeof(ISaasDbContext))]
 [ConnectionStringName("Default")]
 public class CoreServiceDbContext :
     AbpDbContext<CoreServiceDbContext>,
-    ITenantManagementDbContext,
-    IIdentityDbContext
+    ISaasDbContext,
+    IIdentityProDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
 
@@ -51,8 +51,9 @@ public class CoreServiceDbContext :
     public DbSet<IdentityUserDelegation> UserDelegations { get; set; }
     public DbSet<IdentitySession> Sessions { get; set; }
 
-    // Tenant Management
+    // SaaS
     public DbSet<Tenant> Tenants { get; set; }
+    public DbSet<Edition> Editions { get; set; }
     public DbSet<TenantConnectionString> TenantConnectionStrings { get; set; }
 
     #endregion
@@ -72,11 +73,10 @@ public class CoreServiceDbContext :
         builder.ConfigurePermissionManagement();
         builder.ConfigureSettingManagement();
         builder.ConfigureBackgroundJobs();
-        builder.ConfigureAuditLogging();
         builder.ConfigureFeatureManagement();
-        builder.ConfigureIdentity();
-        builder.ConfigureOpenIddict();
-        builder.ConfigureTenantManagement();
+        builder.ConfigureIdentityPro();
+        builder.ConfigureOpenIddictPro();
+        builder.ConfigureSaas();
         builder.ConfigureBlobStoring();
         
         /* Configure your own tables/entities inside here */

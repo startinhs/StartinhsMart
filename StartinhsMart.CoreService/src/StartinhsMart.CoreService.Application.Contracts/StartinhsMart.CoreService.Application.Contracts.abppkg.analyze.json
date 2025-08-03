@@ -113,6 +113,20 @@
       "contentType": "abpModule",
       "name": "CoreServiceApplicationContractsModule",
       "summary": null
+    },
+    {
+      "displayName": "Dashboard",
+      "isEnabled": true,
+      "contentType": "permission",
+      "name": "CoreService.Dashboard.Tenant",
+      "summary": null
+    },
+    {
+      "displayName": "Dashboard",
+      "isEnabled": true,
+      "contentType": "permission",
+      "name": "CoreService.Dashboard.Host",
+      "summary": null
     }
   ]
 }

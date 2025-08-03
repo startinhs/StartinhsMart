@@ -23,12 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme" Version="4.0.5" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXTheme" Version="4.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Identity.Blazor.WebAssembly" Version="9.0.4" />
-    <PackageReference Include="Volo.Abp.TenantManagement.Blazor.WebAssembly" Version="9.0.4" />
+    <PackageReference Include="Volo.Abp.Account.Pro.Admin.Blazor.WebAssembly" Version="9.0.4" />
+    <PackageReference Include="Volo.Abp.Identity.Pro.Blazor.WebAssembly" Version="9.0.4" />
+    <PackageReference Include="Volo.Saas.Host.Blazor.WebAssembly" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>

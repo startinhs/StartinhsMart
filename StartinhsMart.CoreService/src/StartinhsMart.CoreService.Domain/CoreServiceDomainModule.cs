@@ -11,18 +11,17 @@ using Volo.Abp.BlobStoring.Database;
 using Volo.Abp.Caching;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.PermissionManagement.OpenIddict;
-using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Emailing;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
-using Volo.Abp.TenantManagement;
+using Volo.Abp.Commercial.SuiteTemplates;
+using Volo.Saas;
 
 namespace StartinhsMart.CoreService;
 
 [DependsOn(
     typeof(CoreServiceDomainSharedModule),
-    typeof(AbpAuditLoggingDomainModule),
     typeof(AbpCachingModule),
     typeof(AbpBackgroundJobsDomainModule),
     typeof(AbpFeatureManagementDomainModule),
@@ -30,9 +29,10 @@ namespace StartinhsMart.CoreService;
     typeof(AbpPermissionManagementDomainOpenIddictModule),
     typeof(AbpSettingManagementDomainModule),
     typeof(AbpEmailingModule),
-    typeof(AbpIdentityDomainModule),
-    typeof(AbpOpenIddictDomainModule),
-    typeof(AbpTenantManagementDomainModule),
+    typeof(AbpIdentityProDomainModule),
+    typeof(AbpOpenIddictProDomainModule),
+    typeof(SaasDomainModule),
+    typeof(VoloAbpCommercialSuiteTemplatesModule),
     typeof(BlobStoringDatabaseDomainModule)
     )]
 public class CoreServiceDomainModule : AbpModule

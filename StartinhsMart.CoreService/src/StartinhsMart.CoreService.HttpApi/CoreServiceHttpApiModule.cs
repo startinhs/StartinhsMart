@@ -7,7 +7,7 @@ using Volo.Abp.Identity;
 using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement.HttpApi;
 using Volo.Abp.Localization;
-using Volo.Abp.TenantManagement;
+using Volo.Saas.Host;
 
 namespace StartinhsMart.CoreService;
 
@@ -15,9 +15,10 @@ namespace StartinhsMart.CoreService;
     typeof(CoreServiceApplicationContractsModule),
     typeof(AbpPermissionManagementHttpApiModule),
     typeof(AbpSettingManagementHttpApiModule),
-    typeof(AbpAccountHttpApiModule),
     typeof(AbpIdentityHttpApiModule),
-    typeof(AbpTenantManagementHttpApiModule),
+    typeof(AbpAccountAdminHttpApiModule),
+    typeof(SaasHostHttpApiModule),
+    typeof(AbpAccountPublicHttpApiModule),
     typeof(AbpFeatureManagementHttpApiModule)
     )]
 public class CoreServiceHttpApiModule : AbpModule

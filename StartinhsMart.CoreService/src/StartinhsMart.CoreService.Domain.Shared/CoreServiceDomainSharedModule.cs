@@ -1,5 +1,4 @@
 using StartinhsMart.CoreService.Localization;
-using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
@@ -12,19 +11,20 @@ using Volo.Abp.SettingManagement;
 using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.BlobStoring.Database;
-using Volo.Abp.TenantManagement;
+using Volo.Saas;
+using Volo.Abp.GlobalFeatures;
 
 namespace StartinhsMart.CoreService;
 
 [DependsOn(
-    typeof(AbpAuditLoggingDomainSharedModule),
     typeof(AbpBackgroundJobsDomainSharedModule),
     typeof(AbpFeatureManagementDomainSharedModule),
     typeof(AbpPermissionManagementDomainSharedModule),
     typeof(AbpSettingManagementDomainSharedModule),
-    typeof(AbpIdentityDomainSharedModule),
-    typeof(AbpOpenIddictDomainSharedModule),
-    typeof(AbpTenantManagementDomainSharedModule),
+    typeof(AbpIdentityProDomainSharedModule),
+    typeof(AbpOpenIddictProDomainSharedModule),
+    typeof(SaasDomainSharedModule),
+    typeof(AbpGlobalFeaturesModule),
     typeof(BlobStoringDatabaseDomainSharedModule)
     )]
 public class CoreServiceDomainSharedModule : AbpModule

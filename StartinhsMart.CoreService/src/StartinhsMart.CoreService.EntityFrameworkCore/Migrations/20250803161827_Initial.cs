@@ -12,40 +12,6 @@ namespace StartinhsMart.CoreService.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AbpAuditLogs",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ApplicationName = table.Column<string>(type: "character varying(96)", maxLength: 96, nullable: true),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: true),
-                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
-                    TenantName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    ImpersonatorUserId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ImpersonatorUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    ImpersonatorTenantId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ImpersonatorTenantName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    ExecutionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ExecutionDuration = table.Column<int>(type: "integer", nullable: false),
-                    ClientIpAddress = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    ClientName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    ClientId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    CorrelationId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    BrowserInfo = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    HttpMethod = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: true),
-                    Url = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    Exceptions = table.Column<string>(type: "text", nullable: true),
-                    Comments = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    HttpStatusCode = table.Column<int>(type: "integer", nullable: true),
-                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AbpAuditLogs", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AbpBackgroundJobs",
                 columns: table => new
                 {
@@ -348,29 +314,6 @@ namespace StartinhsMart.CoreService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AbpTenants",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    NormalizedName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    EntityVersion = table.Column<int>(type: "integer", nullable: false),
-                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
-                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AbpTenants", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AbpUserDelegations",
                 columns: table => new
                 {
@@ -491,53 +434,53 @@ namespace StartinhsMart.CoreService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AbpAuditLogActions",
+                name: "SaasEditions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
-                    AuditLogId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ServiceName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    MethodName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    Parameters = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    ExecutionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ExecutionDuration = table.Column<int>(type: "integer", nullable: false),
-                    ExtraProperties = table.Column<string>(type: "text", nullable: true)
+                    DisplayName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    PlanId = table.Column<Guid>(type: "uuid", nullable: true),
+                    EntityVersion = table.Column<int>(type: "integer", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AbpAuditLogActions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AbpAuditLogActions_AbpAuditLogs_AuditLogId",
-                        column: x => x.AuditLogId,
-                        principalTable: "AbpAuditLogs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_SaasEditions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AbpEntityChanges",
+                name: "SaasTenants",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    AuditLogId = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ChangeTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ChangeType = table.Column<byte>(type: "smallint", nullable: false),
-                    EntityTenantId = table.Column<Guid>(type: "uuid", nullable: true),
-                    EntityId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    EntityTypeFullName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    ExtraProperties = table.Column<string>(type: "text", nullable: true)
+                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    NormalizedName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    EditionId = table.Column<Guid>(type: "uuid", nullable: true),
+                    EditionEndDateUtc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ActivationState = table.Column<byte>(type: "smallint", nullable: false),
+                    ActivationEndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    EntityVersion = table.Column<int>(type: "integer", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AbpEntityChanges", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AbpEntityChanges_AbpAuditLogs_AuditLogId",
-                        column: x => x.AuditLogId,
-                        principalTable: "AbpAuditLogs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_SaasTenants", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -607,25 +550,6 @@ namespace StartinhsMart.CoreService.Migrations
                         name: "FK_AbpRoleClaims_AbpRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AbpRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AbpTenantConnectionStrings",
-                columns: table => new
-                {
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Value = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AbpTenantConnectionStrings", x => new { x.TenantId, x.Name });
-                    table.ForeignKey(
-                        name: "FK_AbpTenantConnectionStrings_AbpTenants_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "AbpTenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -771,24 +695,20 @@ namespace StartinhsMart.CoreService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AbpEntityPropertyChanges",
+                name: "SaasTenantConnectionStrings",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
-                    EntityChangeId = table.Column<Guid>(type: "uuid", nullable: false),
-                    NewValue = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    OriginalValue = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    PropertyName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    PropertyTypeFullName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Value = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AbpEntityPropertyChanges", x => x.Id);
+                    table.PrimaryKey("PK_SaasTenantConnectionStrings", x => new { x.TenantId, x.Name });
                     table.ForeignKey(
-                        name: "FK_AbpEntityPropertyChanges_AbpEntityChanges_EntityChangeId",
-                        column: x => x.EntityChangeId,
-                        principalTable: "AbpEntityChanges",
+                        name: "FK_SaasTenantConnectionStrings_SaasTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "SaasTenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -828,26 +748,6 @@ namespace StartinhsMart.CoreService.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AbpAuditLogActions_AuditLogId",
-                table: "AbpAuditLogActions",
-                column: "AuditLogId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AbpAuditLogActions_TenantId_ServiceName_MethodName_Executio~",
-                table: "AbpAuditLogActions",
-                columns: new[] { "TenantId", "ServiceName", "MethodName", "ExecutionTime" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AbpAuditLogs_TenantId_ExecutionTime",
-                table: "AbpAuditLogs",
-                columns: new[] { "TenantId", "ExecutionTime" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AbpAuditLogs_TenantId_UserId_ExecutionTime",
-                table: "AbpAuditLogs",
-                columns: new[] { "TenantId", "UserId", "ExecutionTime" });
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AbpBackgroundJobs_IsAbandoned_NextTryTime",
                 table: "AbpBackgroundJobs",
                 columns: new[] { "IsAbandoned", "NextTryTime" });
@@ -866,21 +766,6 @@ namespace StartinhsMart.CoreService.Migrations
                 name: "IX_AbpBlobs_TenantId_ContainerId_Name",
                 table: "AbpBlobs",
                 columns: new[] { "TenantId", "ContainerId", "Name" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AbpEntityChanges_AuditLogId",
-                table: "AbpEntityChanges",
-                column: "AuditLogId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AbpEntityChanges_TenantId_EntityTypeFullName_EntityId",
-                table: "AbpEntityChanges",
-                columns: new[] { "TenantId", "EntityTypeFullName", "EntityId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AbpEntityPropertyChanges_EntityChangeId",
-                table: "AbpEntityPropertyChanges",
-                column: "EntityChangeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AbpFeatureGroups_Name",
@@ -1007,16 +892,6 @@ namespace StartinhsMart.CoreService.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_AbpTenants_Name",
-                table: "AbpTenants",
-                column: "Name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AbpTenants_NormalizedName",
-                table: "AbpTenants",
-                column: "NormalizedName");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AbpUserClaims_UserId",
                 table: "AbpUserClaims",
                 column: "UserId");
@@ -1085,14 +960,26 @@ namespace StartinhsMart.CoreService.Migrations
                 name: "IX_OpenIddictTokens_ReferenceId",
                 table: "OpenIddictTokens",
                 column: "ReferenceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SaasEditions_DisplayName",
+                table: "SaasEditions",
+                column: "DisplayName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SaasTenants_Name",
+                table: "SaasTenants",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SaasTenants_NormalizedName",
+                table: "SaasTenants",
+                column: "NormalizedName");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AbpAuditLogActions");
-
             migrationBuilder.DropTable(
                 name: "AbpBackgroundJobs");
 
@@ -1101,9 +988,6 @@ namespace StartinhsMart.CoreService.Migrations
 
             migrationBuilder.DropTable(
                 name: "AbpClaimTypes");
-
-            migrationBuilder.DropTable(
-                name: "AbpEntityPropertyChanges");
 
             migrationBuilder.DropTable(
                 name: "AbpFeatureGroups");
@@ -1145,9 +1029,6 @@ namespace StartinhsMart.CoreService.Migrations
                 name: "AbpSettings");
 
             migrationBuilder.DropTable(
-                name: "AbpTenantConnectionStrings");
-
-            migrationBuilder.DropTable(
                 name: "AbpUserClaims");
 
             migrationBuilder.DropTable(
@@ -1172,13 +1053,13 @@ namespace StartinhsMart.CoreService.Migrations
                 name: "OpenIddictTokens");
 
             migrationBuilder.DropTable(
+                name: "SaasEditions");
+
+            migrationBuilder.DropTable(
+                name: "SaasTenantConnectionStrings");
+
+            migrationBuilder.DropTable(
                 name: "AbpBlobContainers");
-
-            migrationBuilder.DropTable(
-                name: "AbpEntityChanges");
-
-            migrationBuilder.DropTable(
-                name: "AbpTenants");
 
             migrationBuilder.DropTable(
                 name: "AbpOrganizationUnits");
@@ -1193,7 +1074,7 @@ namespace StartinhsMart.CoreService.Migrations
                 name: "OpenIddictAuthorizations");
 
             migrationBuilder.DropTable(
-                name: "AbpAuditLogs");
+                name: "SaasTenants");
 
             migrationBuilder.DropTable(
                 name: "OpenIddictApplications");

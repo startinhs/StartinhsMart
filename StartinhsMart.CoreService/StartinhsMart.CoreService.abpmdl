@@ -1,23 +1,23 @@
 {
   "template": "app",
   "imports": {
-    "Volo.Abp.LeptonXLiteTheme": {
+    "Volo.Abp.LeptonXTheme": {
       "version": "4.0.5",
       "isInstalled": true
     },
-    "Volo.Abp.Account": {
+    "Volo.Abp.OpenIddict.Pro": {
       "version": "9.0.4",
       "isInstalled": true
     },
-    "Volo.Abp.OpenIddict": {
+    "Volo.Saas": {
       "version": "9.0.4",
       "isInstalled": true
     },
-    "Volo.Abp.Identity": {
+    "Volo.Abp.Identity.Pro": {
       "version": "9.0.4",
       "isInstalled": true
     },
-    "Volo.Abp.TenantManagement": {
+    "Volo.Abp.Account.Pro": {
       "version": "9.0.4",
       "isInstalled": true
     },

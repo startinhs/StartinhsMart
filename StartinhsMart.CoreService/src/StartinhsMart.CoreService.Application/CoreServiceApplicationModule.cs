@@ -5,7 +5,7 @@ using Volo.Abp.Identity;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Modularity;
-using Volo.Abp.TenantManagement;
+using Volo.Saas.Host;
 
 namespace StartinhsMart.CoreService;
 
@@ -15,8 +15,9 @@ namespace StartinhsMart.CoreService;
     typeof(AbpPermissionManagementApplicationModule),
     typeof(AbpFeatureManagementApplicationModule),
     typeof(AbpIdentityApplicationModule),
-    typeof(AbpAccountApplicationModule),
-    typeof(AbpTenantManagementApplicationModule),
+    typeof(AbpAccountPublicApplicationModule),
+    typeof(AbpAccountAdminApplicationModule),
+    typeof(SaasHostApplicationModule),
     typeof(AbpSettingManagementApplicationModule)
     )]
 public class CoreServiceApplicationModule : AbpModule

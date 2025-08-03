@@ -1,8 +1,10 @@
 {
-  "id": "ee1f36db-247d-4564-a821-76c5f2f8e807",
+  "id": "7ced67f5-3775-46e5-a58c-a22b88a226ee",
   "template": "app",
   "versions": {
+    "LeptonX": "4.0.5",
     "AbpFramework": "9.0.4",
+    "AbpCommercial": "9.0.4",
     "AbpStudio": "0.9.23",
     "TargetDotnetFramework": "net9.0"
   },
@@ -40,10 +42,11 @@
     "databaseManagementSystem": "postgresql",
     "separateTenantSchema": "false",
     "createInitialMigration": "true",
-    "theme": "leptonx-lite",
-    "themeStyle": "",
+    "theme": "leptonx",
+    "themeStyle": "system",
     "mobileFramework": "none",
     "publicWebsite": "false",
+    "optionalModules": "",
     "socialLogin": ""
   }
 }

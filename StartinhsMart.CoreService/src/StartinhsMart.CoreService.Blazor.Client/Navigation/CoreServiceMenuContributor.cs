@@ -10,8 +10,8 @@ using Localization.Resources.AbpUi;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.SettingManagement.Blazor.Menus;
 using Volo.Abp.Users;
-using Volo.Abp.TenantManagement.Blazor.Navigation;
-using Volo.Abp.Identity.Blazor;
+using Volo.Abp.Identity.Pro.Blazor.Navigation;
+using Volo.Saas.Host.Blazor.Navigation;
 
 namespace StartinhsMart.CoreService.Blazor.Client.Navigation;
 
@@ -52,18 +52,37 @@ public class CoreServiceMenuContributor : IMenuContributor
             icon: "fas fa-home",
             order: 1
         ));
-        
-        if (MultiTenancyConsts.IsEnabled)
-        {
-            administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
-        }
-        else
-        {
-            administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
-        }
 
-        administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
-        administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
+        //HostDashboard
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                CoreServiceMenus.HostDashboard,
+                l["Menu:Dashboard"],
+                "/HostDashboard",
+                icon: "fa fa-chart-line",
+                order: 2
+            ).RequirePermissions(CoreServicePermissions.Dashboard.Host)
+        );
+
+        //TenantDashboard
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                CoreServiceMenus.TenantDashboard,
+                l["Menu:Dashboard"],
+                "/Dashboard",
+                icon: "fa fa-chart-line",
+                order: 2
+            ).RequirePermissions(CoreServicePermissions.Dashboard.Tenant)
+        );
+
+        //Saas
+        administration.SetSubItemOrder(SaasHostMenus.GroupName, 1);
+
+        //Administration->Identity
+        administration.SetSubItemOrder(IdentityProMenus.GroupName, 2);
+
+        //Administration->Settings
+        administration.SetSubItemOrder(SettingManagementMenus.GroupName, 7);
     }
     
     private async Task ConfigureUserMenuAsync(MenuConfigurationContext context)
@@ -76,7 +95,9 @@ public class CoreServiceMenuContributor : IMenuContributor
             var accountResource = context.GetLocalizer<AccountResource>();
 
             context.Menu.AddItem(new ApplicationMenuItem("Account.Manage", accountResource["MyAccount"], $"{authServerUrl.EnsureEndsWith('/')}Account/Manage", icon: "fa fa-cog", order: 900,  target: "_blank").RequireAuthenticated());
-
+            context.Menu.AddItem(new ApplicationMenuItem("Account.SecurityLogs", accountResource["MySecurityLogs"], $"{authServerUrl.EnsureEndsWith('/')}Account/SecurityLogs", icon: "fa fa-user-shield", order: 901,  target: "_blank").RequireAuthenticated());
+            context.Menu.AddItem(new ApplicationMenuItem("Account.Sessions", accountResource["Sessions"], url: $"{authServerUrl.EnsureEndsWith('/')}Account/Sessions", icon: "fa fa-clock", order: 902, target: "_blank").RequireAuthenticated());
+            
         }
         else
         {

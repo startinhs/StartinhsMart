@@ -125,16 +125,16 @@
       "databaseTables": [],
       "replacedDbContexts": [
         {
-          "name": "ITenantManagementDbContext",
-          "namespace": "Volo.Abp.TenantManagement.EntityFrameworkCore",
-          "declaringAssemblyName": "Volo.Abp.TenantManagement.EntityFrameworkCore",
-          "fullName": "Volo.Abp.TenantManagement.EntityFrameworkCore.ITenantManagementDbContext"
+          "name": "ISaasDbContext",
+          "namespace": "Volo.Saas.EntityFrameworkCore",
+          "declaringAssemblyName": "Volo.Saas.EntityFrameworkCore",
+          "fullName": "Volo.Saas.EntityFrameworkCore.ISaasDbContext"
         },
         {
-          "name": "IIdentityDbContext",
+          "name": "IIdentityProDbContext",
           "namespace": "Volo.Abp.Identity.EntityFrameworkCore",
-          "declaringAssemblyName": "Volo.Abp.Identity.EntityFrameworkCore",
-          "fullName": "Volo.Abp.Identity.EntityFrameworkCore.IIdentityDbContext"
+          "declaringAssemblyName": "Volo.Abp.Identity.Pro.EntityFrameworkCore",
+          "fullName": "Volo.Abp.Identity.EntityFrameworkCore.IIdentityProDbContext"
         }
       ],
       "modelBuilderExtensionMethods": [],

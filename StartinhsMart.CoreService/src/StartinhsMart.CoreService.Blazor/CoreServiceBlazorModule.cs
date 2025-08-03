@@ -31,10 +31,11 @@ using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Security.Claims;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
-using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling;
-using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme;
+using Volo.Abp.AspNetCore.Components.Server.LeptonXTheme;
+using Volo.Abp.AspNetCore.Components.Server.LeptonXTheme.Bundling;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonX;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonX.Bundling;
+using Volo.Abp.LeptonX.Shared;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.Swashbuckle;
@@ -44,8 +45,19 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.Identity;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.Account.Web;
-using Volo.Abp.Identity.Blazor.Server;
-using Volo.Abp.TenantManagement.Blazor.Server;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.AspNetCore.Authentication.Twitter;
+using Volo.Abp.Account.Pro.Admin.Blazor.Server;
+using Volo.Abp.Account.Pro.Public.Blazor.Server;
+using Volo.Abp.Account.Public.Web;
+using Volo.Abp.Account.Public.Web.ExternalProviders;
+using Volo.Abp.Account.Public.Web.Impersonation;
+using Volo.Abp.Identity.Pro.Blazor;
+using Volo.Abp.Identity.Pro.Blazor.Server;
+using Volo.Saas.Host;
+using Volo.Saas.Host.Blazor;
+using Volo.Saas.Host.Blazor.Server;
 
 namespace StartinhsMart.CoreService.Blazor;
 
@@ -54,12 +66,15 @@ namespace StartinhsMart.CoreService.Blazor;
     typeof(CoreServiceEntityFrameworkCoreModule),
     typeof(CoreServiceHttpApiModule),
     typeof(AbpAutofacModule),
-    typeof(AbpAspNetCoreComponentsServerLeptonXLiteThemeModule),
-    typeof(AbpAspNetCoreMvcUiLeptonXLiteThemeModule),
+    typeof(AbpAspNetCoreComponentsServerLeptonXThemeModule),
+    typeof(AbpAspNetCoreMvcUiLeptonXThemeModule),
     typeof(AbpSwashbuckleModule),
-    typeof(AbpIdentityBlazorServerModule),
-    typeof(AbpTenantManagementBlazorServerModule),
-    typeof(AbpAccountWebOpenIddictModule),
+    typeof(AbpAccountPublicWebImpersonationModule),
+    typeof(AbpAccountPublicWebOpenIddictModule),
+    typeof(AbpAccountPublicBlazorServerModule),
+    typeof(AbpAccountAdminBlazorServerModule),
+    typeof(AbpIdentityProBlazorServerModule),
+    typeof(SaasHostBlazorServerModule),
     typeof(AbpAspNetCoreSerilogModule)
    )]
 public class CoreServiceBlazorModule : AbpModule
@@ -138,13 +153,24 @@ public class CoreServiceBlazorModule : AbpModule
         ConfigureAuthentication(context);
         ConfigureUrls(configuration);
         ConfigureBundles();
+        ConfigureImpersonation(context, configuration);
         ConfigureAutoMapper();
         ConfigureVirtualFileSystem(hostingEnvironment);
         ConfigureSwaggerServices(context.Services);
+        ConfigureExternalProviders(context, configuration);
         ConfigureAutoApiControllers();
         ConfigureBlazorise(context);
         ConfigureRouter(context);
         ConfigureMenu(context);
+        ConfigureTheme();
+    }
+    
+    private void ConfigureTheme()
+    {
+        Configure<LeptonXThemeOptions>(options =>
+        {
+            options.DefaultStyle = LeptonXStyleNames.System;
+        });
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
@@ -171,7 +197,7 @@ public class CoreServiceBlazorModule : AbpModule
         {
             // MVC UI
             options.StyleBundles.Configure(
-                LeptonXLiteThemeBundles.Styles.Global,
+                LeptonXThemeBundles.Styles.Global,
                 bundle =>
                 {
                     bundle.AddFiles("/global-styles.css");
@@ -181,7 +207,7 @@ public class CoreServiceBlazorModule : AbpModule
 
             // Blazor UI
             options.StyleBundles.Configure(
-                BlazorLeptonXLiteThemeBundles.Styles.Global,
+                BlazorLeptonXThemeBundles.Styles.Global,
                 bundle =>
                 {
                     bundle.AddFiles("/blazor-global-styles.css");
@@ -190,6 +216,24 @@ public class CoreServiceBlazorModule : AbpModule
                     bundle.AddFiles(new BundleFile("/StartinhsMart.CoreService.Blazor.Client.styles.css", true));
                 }
             );
+        });
+    }
+
+    private void ConfigureImpersonation(ServiceConfigurationContext context, IConfiguration configuration)
+    {
+        context.Services.Configure<SaasHostBlazorOptions>(options =>
+        {
+            options.EnableTenantImpersonation = true;
+        });
+        context.Services.Configure<AbpIdentityProBlazorOptions>(options =>
+        {
+            options.EnableUserImpersonation = true;
+        });
+        context.Services.Configure<AbpAccountOptions>(options =>
+        {
+            options.TenantAdminUserName = "admin";
+            options.ImpersonationTenantPermission = SaasHostPermissions.Tenants.Impersonation;
+            options.ImpersonationUserPermission = IdentityPermissions.Users.Impersonation;
         });
     }
 
@@ -220,6 +264,52 @@ public class CoreServiceBlazorModule : AbpModule
         );
     }
 
+    private void ConfigureExternalProviders(ServiceConfigurationContext context, IConfiguration configuration)
+    {
+        context.Services.AddAuthentication()
+            .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+            {
+                options.ClaimActions.MapJsonKey(AbpClaimTypes.Picture, "picture");
+            })
+            .WithDynamicOptions<GoogleOptions, GoogleHandler>(
+                GoogleDefaults.AuthenticationScheme,
+                options =>
+                {
+                    options.WithProperty(x => x.ClientId);
+                    options.WithProperty(x => x.ClientSecret, isSecret: true);
+                }
+            )
+            .AddMicrosoftAccount(MicrosoftAccountDefaults.AuthenticationScheme, options =>
+            {
+                //Personal Microsoft accounts as an example.
+                options.AuthorizationEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
+                options.TokenEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
+
+                options.ClaimActions.MapCustomJson("picture", _ => "https://graph.microsoft.com/v1.0/me/photo/$value");
+                options.SaveTokens = true;
+            })
+            .WithDynamicOptions<MicrosoftAccountOptions, MicrosoftAccountHandler>(
+                MicrosoftAccountDefaults.AuthenticationScheme,
+                options =>
+                {
+                    options.WithProperty(x => x.ClientId);
+                    options.WithProperty(x => x.ClientSecret, isSecret: true);
+                }
+            )
+            .AddTwitter(TwitterDefaults.AuthenticationScheme, options =>
+            {
+                options.ClaimActions.MapJsonKey(AbpClaimTypes.Picture, "profile_image_url_https");
+                options.RetrieveUserDetails = true;
+            })
+            .WithDynamicOptions<TwitterOptions, TwitterHandler>(
+                TwitterDefaults.AuthenticationScheme,
+                options =>
+                {
+                    options.WithProperty(x => x.ConsumerKey);
+                    options.WithProperty(x => x.ConsumerSecret, isSecret: true);
+                }
+            );
+    }
 
     private void ConfigureBlazorise(ServiceConfigurationContext context)
     {
