@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 import numpy as np
 from keras.src.saving import load_model
 from keras.src.legacy.preprocessing import image
@@ -7,8 +7,11 @@ import io
 import pandas as pd
 from pymongo import MongoClient
 import datetime
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Cho phép CORS để CoreService có thể gọi API
+
 model = load_model('modelDogBreeds.h5')
 
 # Load breeds list
@@ -22,75 +25,6 @@ def preprocess_image(file):
     img_array = preprocess_input(img_array)
     return img_array
 
-@app.route('/')
-def index():
-    return send_from_directory('PawsomePets', 'index.html')
-
-@app.route('/gioi-thieu.html')
-def gioi_thieu():
-    return send_from_directory('PawsomePets', 'gioi-thieu.html')
-
-@app.route('/lien-he.html')
-def lien_he():
-    return send_from_directory('PawsomePets', 'lien-he.html')
-
-@app.route('/thu-ngo.html')
-def thu_ngo():
-    return send_from_directory('PawsomePets', 'thu-ngo.html')
-
-@app.route('/chinh-sach.html')
-@app.route('/chinh-sach/<path:filename>.html')
-def chinh_sach(filename=None):
-    if filename is None:
-        return send_from_directory('PawsomePets', 'chinh-sach.html')
-    return send_from_directory('PawsomePets/chinh-sach', f'{filename}.html')
-
-@app.route('/tin-tuc.html')
-@app.route('/tin-tuc/<path:filename>.html')
-def tin_tuc(filename=None):
-    if filename is None:
-        return send_from_directory('PawsomePets', 'tin-tuc.html')
-    return send_from_directory('PawsomePets/tin-tuc', f'{filename}.html')
-
-@app.route('/cho-corgi/')
-@app.route('/cho-corgi/<path:filename>.html')
-def cho_corgi(filename=None):
-    if filename is None:
-        return send_from_directory('PawsomePets/cho-corgi', 'index.html')
-    return send_from_directory('PawsomePets/cho-corgi', f'{filename}.html')
-
-@app.route('/cho-lap-xuong/')
-@app.route('/cho-lap-xuong/<path:filename>.html')
-def cho_lap_xuong(filename=None):
-    if filename is None:
-        return send_from_directory('PawsomePets/cho-lap-xuong', 'index.html')
-    return send_from_directory('PawsomePets/cho-lap-xuong', f'{filename}.html')
-
-@app.route('/cho-phoc-soc/')
-@app.route('/cho-phoc-soc/<path:filename>.html')
-def cho_phoc_soc(filename=None):
-    if filename is None:
-        return send_from_directory('PawsomePets/cho-phoc-soc', 'index.html')
-    return send_from_directory('PawsomePets/cho-phoc-soc', f'{filename}.html')
-
-@app.route('/cho-poodle/')
-@app.route('/cho-poodle/<path:filename>.html')
-def cho_poodle(filename=None):
-    if filename is None:
-        return send_from_directory('PawsomePets/cho-poodle', 'index.html')
-    return send_from_directory('PawsomePets/cho-poodle', f'{filename}.html')
-
-@app.route('/cho-shiba/')
-@app.route('/cho-shiba/<path:filename>.html')
-def cho_shiba(filename=None):
-    if filename is None:
-        return send_from_directory('PawsomePets/cho-shiba', 'index.html')
-    return send_from_directory('PawsomePets/cho-shiba', f'{filename}.html')
-
-@app.route('/prediction')
-def prediction():
-    return send_from_directory('PawsomePets', 'prediction.html')
-
 # Kết nối MongoDB
 client = MongoClient("mongodb+srv://tinh:tinh@pawsomepetscluster.hvkej.mongodb.net/?retryWrites=true&w=majority&appName=PawsomePetsCluster")
 mongo_db = client["DogBreedPrediction"]
@@ -98,6 +32,10 @@ history_collection = mongo_db["PredictionHistories"]
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    print(f"Received {request.method} request to /predict")
+    print(f"Request headers: {dict(request.headers)}")
+    print(f"Request files: {list(request.files.keys())}")
+    
     try:
         if 'image' not in request.files:
             return jsonify({'error': 'No image uploaded'})
@@ -132,6 +70,10 @@ def predict():
         })
     except Exception as e:
         return jsonify({'error': str(e)})
+
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({'status': 'OK', 'message': 'Prediction service is running'})
 
 if __name__ == '__main__':
     app.run(port=8080, debug=True)

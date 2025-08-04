@@ -73,6 +73,7 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
         private byte[] ImageData;
         private bool showImageSearchModal = false;
         private bool isPredicting = false;
+        private bool showPredictionResult = false;
         
         public Pets()
         {
@@ -517,13 +518,17 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
             StateHasChanged();
         }
 
-        private void CloseImageSearchModal()
+        private async void CloseImageSearchModal()
         {
             showImageSearchModal = false;
             ImagePreview = "";
             PredictionResult = "";
             ImageData = null;
             isPredicting = false;
+            
+            // Reset bộ lọc khi đóng modal
+            Filter.Breed = "";
+            await GetPetsAsync();
             StateHasChanged();
         }
 
@@ -583,10 +588,16 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
             }
 
             isPredicting = false;
-            Filter.FilterText = PredictionResult;
             showImageSearchModal = false;
+            
+            // Sử dụng kết quả dự đoán để lọc dữ liệu ngầm
+            if (!string.IsNullOrEmpty(PredictionResult))
+            {
+                Filter.Breed = PredictionResult;
+                await GetPetsAsync();
+            }
+            
             StateHasChanged();
-            await GetPetsAsync();
         }
 
         private async Task ShowWebcamPopup()

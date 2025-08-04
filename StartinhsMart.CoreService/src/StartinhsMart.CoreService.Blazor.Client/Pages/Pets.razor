@@ -923,14 +923,7 @@
                     </button>
                 </div>
                 <br />
-                <div style="min-height: 40px; margin-top: 10px;">
-                    @if (!string.IsNullOrEmpty(PredictionResult))
-                    {
-                        <div style="background-color: #f0f8ff; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
-                            <strong>Kết quả:</strong> @PredictionResult
-                        </div>
-                    }
-                </div>
+                @* Kết quả dự đoán được sử dụng ngầm để lọc dữ liệu, không hiển thị trên giao diện *@
             </div>
         </div>
 
