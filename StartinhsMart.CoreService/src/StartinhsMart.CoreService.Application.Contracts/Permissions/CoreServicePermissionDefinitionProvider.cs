@@ -13,6 +13,11 @@ public class CoreServicePermissionDefinitionProvider : PermissionDefinitionProvi
 
         //Define your own permissions here. Example:
         //myGroup.AddPermission(CoreServicePermissions.MyPermission1, L("Permission:MyPermission1"));
+
+        var petPermission = myGroup.AddPermission(CoreServicePermissions.Pets.Default, L("Permission:Pets"));
+        petPermission.AddChild(CoreServicePermissions.Pets.Create, L("Permission:Create"));
+        petPermission.AddChild(CoreServicePermissions.Pets.Edit, L("Permission:Edit"));
+        petPermission.AddChild(CoreServicePermissions.Pets.Delete, L("Permission:Delete"));
     }
 
     private static LocalizableString L(string name)
