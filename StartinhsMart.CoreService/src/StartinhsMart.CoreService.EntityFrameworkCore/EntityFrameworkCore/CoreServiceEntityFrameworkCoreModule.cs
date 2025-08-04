@@ -1,3 +1,4 @@
+using StartinhsMart.CoreService.Pets;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Uow;
@@ -44,9 +45,11 @@ public class CoreServiceEntityFrameworkCoreModule : AbpModule
     {
         context.Services.AddAbpDbContext<CoreServiceDbContext>(options =>
         {
-                /* Remove "includeAllEntities: true" to create
-                 * default repositories only for aggregate roots */
+            /* Remove "includeAllEntities: true" to create
+             * default repositories only for aggregate roots */
             options.AddDefaultRepositories(includeAllEntities: true);
+            options.AddRepository<Pet, Pets.EfCorePetRepository>();
+
         });
 
         if (AbpStudioAnalyzeHelper.IsInAnalyzeMode)
@@ -62,6 +65,6 @@ public class CoreServiceEntityFrameworkCoreModule : AbpModule
             options.UseNpgsql();
 
         });
-        
+
     }
 }

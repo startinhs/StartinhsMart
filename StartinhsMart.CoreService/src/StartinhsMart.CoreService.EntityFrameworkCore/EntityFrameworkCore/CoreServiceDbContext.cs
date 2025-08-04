@@ -1,3 +1,4 @@
+using StartinhsMart.CoreService.Pets;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -25,8 +26,9 @@ public class CoreServiceDbContext :
     ITenantManagementDbContext,
     IIdentityDbContext
 {
+    public DbSet<AppFileDescriptors.AppFileDescriptor> AppFileDescriptors { get; set; } = null!;
+    public DbSet<Pet> Pets { get; set; } = null!;
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
-
 
     #region Entities from the modules
 
@@ -78,7 +80,7 @@ public class CoreServiceDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureTenantManagement();
         builder.ConfigureBlobStoring();
-        
+
         /* Configure your own tables/entities inside here */
 
         //builder.Entity<YourEntity>(b =>
@@ -87,5 +89,34 @@ public class CoreServiceDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
+        builder.Entity<Pet>(b =>
+                {
+                    b.ToTable(CoreServiceConsts.DbTablePrefix + "Pets", CoreServiceConsts.DbSchema);
+                    b.ConfigureByConvention();
+                    b.Property(x => x.TenantId).HasColumnName(nameof(Pet.TenantId));
+                    b.Property(x => x.ImageId).HasColumnName(nameof(Pet.ImageId));
+                    b.Property(x => x.Category).HasColumnName(nameof(Pet.Category));
+                    b.Property(x => x.Name).HasColumnName(nameof(Pet.Name));
+                    b.Property(x => x.Breed).HasColumnName(nameof(Pet.Breed));
+                    b.Property(x => x.Age).HasColumnName(nameof(Pet.Age));
+                    b.Property(x => x.Gender).HasColumnName(nameof(Pet.Gender));
+                    b.Property(x => x.Color).HasColumnName(nameof(Pet.Color));
+                    b.Property(x => x.Weight).HasColumnName(nameof(Pet.Weight));
+                    b.Property(x => x.HealthStatus).HasColumnName(nameof(Pet.HealthStatus));
+                    b.Property(x => x.Vaccinations).HasColumnName(nameof(Pet.Vaccinations));
+                    b.Property(x => x.Description).HasColumnName(nameof(Pet.Description));
+                    b.Property(x => x.Price).HasColumnName(nameof(Pet.Price));
+                    b.Property(x => x.Quantity).HasColumnName(nameof(Pet.Quantity));
+                    b.Property(x => x.IsBooth).HasColumnName(nameof(Pet.IsBooth));
+                    b.Property(x => x.IsStock).HasColumnName(nameof(Pet.IsStock));
+                });
+
+        builder.Entity<AppFileDescriptors.AppFileDescriptor>(b =>
+                    {
+                        b.ToTable(CoreServiceConsts.DbTablePrefix + "FileDescriptors", CoreServiceConsts.DbSchema);
+                        b.ConfigureByConvention();
+                        b.Property(x => x.Name);
+                        b.Property(x => x.MimeType);
+                    });
     }
 }
