@@ -1,4 +1,6 @@
-﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using StartinhsMart.CoreService.Localization;
@@ -40,7 +42,7 @@ public class CoreServiceMenuContributor : IMenuContributor
     private static async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
     {
         var l = context.GetLocalizer<CoreServiceResource>();
-        
+
         //Administration
         var administration = context.Menu.GetAdministration();
         administration.Order = 5;
@@ -64,8 +66,17 @@ public class CoreServiceMenuContributor : IMenuContributor
 
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
+
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                CoreServiceMenus.Pets,
+                l["Menu:Pets"],
+                url: "/pets",
+                icon: "fa fa-paw",
+                requiredPermissionName: CoreServicePermissions.Pets.Default)
+        );
     }
-    
+
     private async Task ConfigureUserMenuAsync(MenuConfigurationContext context)
     {
         if (OperatingSystem.IsBrowser())
