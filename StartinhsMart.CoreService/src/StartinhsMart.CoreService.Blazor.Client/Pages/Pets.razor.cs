@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Volo.Abp;
 using Volo.Abp.Content;
+using System.Net.Http;
+using System.Text.Json;
 
 
 
@@ -28,6 +30,9 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
     {
         [Inject]
         protected IJSRuntime JsRuntime { get; set; }
+        
+        [Inject]
+        protected HttpClient Http { get; set; } = default!;
             
         private IJSObjectReference? _jsObjectRef;
             
@@ -61,6 +66,13 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
         
         private List<PetDto> SelectedPets { get; set; } = new();
         private bool AllPetsSelected { get; set; }
+        
+        // Image Search Variables
+        private string ImagePreview = "";
+        private string PredictionResult = "";
+        private byte[] ImageData;
+        private bool showImageSearchModal = false;
+        private bool isPredicting = false;
         
         public Pets()
         {
@@ -496,6 +508,103 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
             AllPetsSelected = false;
 
             await GetPetsAsync();
+        }
+
+        // Image Search Methods
+        private void ShowImageSearchModal()
+        {
+            showImageSearchModal = true;
+            StateHasChanged();
+        }
+
+        private void CloseImageSearchModal()
+        {
+            showImageSearchModal = false;
+            ImagePreview = "";
+            PredictionResult = "";
+            ImageData = null;
+            isPredicting = false;
+            StateHasChanged();
+        }
+
+        private async Task UploadImage(InputFileChangeEventArgs e)
+        {
+            var file = e.File;
+            if (file != null)
+            {
+                var buffer = new byte[file.Size];
+                await file.OpenReadStream().ReadAsync(buffer);
+                ImageData = buffer;
+                ImagePreview = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+            }
+        }
+
+        private async Task Predict()
+        {
+            if (ImageData == null)
+            {
+                PredictionResult = "Please upload a photo or take a photo.";
+                return;
+            }
+
+            isPredicting = true;
+            StateHasChanged();
+
+            var content = new MultipartFormDataContent();
+            content.Add(new ByteArrayContent(ImageData), "image", "upload.jpg");
+
+            try
+            {
+                var response = await Http.PostAsync("http://127.0.0.1:8080/predict", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    var jsonDoc = JsonDocument.Parse(result);
+                    var root = jsonDoc.RootElement;
+
+                    if (root.TryGetProperty("breed_name", out JsonElement breedNameElement))
+                    {
+                        PredictionResult = breedNameElement.GetString()?.Trim() ?? "Unknown";
+                    }
+                    else
+                    {
+                        PredictionResult = "Unknown";
+                    }
+                }
+                else
+                {
+                    PredictionResult = "API error";
+                }
+            }
+            catch (Exception ex)
+            {
+                PredictionResult = "System error";
+            }
+
+            isPredicting = false;
+            Filter.FilterText = PredictionResult;
+            showImageSearchModal = false;
+            StateHasChanged();
+            await GetPetsAsync();
+        }
+
+        private async Task ShowWebcamPopup()
+        {
+            await JsRuntime.InvokeVoidAsync("showWebcamPopup");
+        }
+
+        private async Task CaptureImage()
+        {
+            var base64Image = await JsRuntime.InvokeAsync<string>("captureImage");
+            ImagePreview = base64Image;
+            ImageData = Convert.FromBase64String(base64Image.Split(',')[1]);
+            await JsRuntime.InvokeVoidAsync("closeWebcamPopup");
+        }
+
+        private async Task CloseWebcamPopup()
+        {
+            await JsRuntime.InvokeVoidAsync("closeWebcamPopup");
         }
 
 

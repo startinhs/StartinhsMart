@@ -60,6 +60,7 @@
     "FileUploading": "File uploading...",
     "MaxFileSizeLimit": "Max file size: {0}mb",
     "Filters": "Filters",
+    "Image Search": "Image Search",
     "Menu:Pets": "Pets",
     "Menu:CoreService": "Core Service"
   }
