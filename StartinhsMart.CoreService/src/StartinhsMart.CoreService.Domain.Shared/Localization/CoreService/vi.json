@@ -61,6 +61,14 @@
     "MaxFileSizeLimit": "Kích thước tệp tối đa: {0}mb",
     "Filters": "Bộ lọc",
     "Image Search": "Tìm kiếm bằng hình ảnh",
+    "UploadImage": "Tải lên hình ảnh",
+    "ImagePreview": "Xem trước hình ảnh",
+    "Camera": "Máy ảnh",
+    "Search": "Tìm kiếm",
+    "Searching": "Đang tìm kiếm",
+    "PleaseUploadImage": "Vui lòng tải lên ảnh hoặc chụp ảnh.",
+    "SearchCompleted": "Tìm kiếm hoàn thành thành công.",
+    "TakePhoto": "Chụp ảnh",
     "Menu:Pets": "Thú cưng",
     "Menu:CoreService": "Dịch vụ cốt lõi"
   }

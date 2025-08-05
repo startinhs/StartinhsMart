@@ -9,8 +9,7 @@ window.FileCleanup = {
 };
 
 // Webcam functionality
-window.showWebcamPopup = function () {
-    document.getElementById("webcamModal").style.display = "flex";
+window.startWebcam = function () {
     navigator.mediaDevices.getUserMedia({ video: true })
         .then((stream) => {
             let video = document.getElementById("video");
@@ -21,8 +20,7 @@ window.showWebcamPopup = function () {
         });
 };
 
-window.closeWebcamPopup = function () {
-    document.getElementById("webcamModal").style.display = "none";
+window.stopWebcam = function () {
     let video = document.getElementById("video");
     let stream = video.srcObject;
     if (stream) {

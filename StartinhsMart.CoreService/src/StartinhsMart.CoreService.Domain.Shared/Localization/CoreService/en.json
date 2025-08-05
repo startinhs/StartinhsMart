@@ -61,6 +61,14 @@
     "MaxFileSizeLimit": "Max file size: {0}mb",
     "Filters": "Filters",
     "Image Search": "Image Search",
+    "UploadImage": "Upload Image",
+    "ImagePreview": "Image Preview",
+    "Camera": "Camera",
+    "Search": "Search",
+    "Searching": "Searching",
+    "PleaseUploadImage": "Please upload a photo or take a photo.",
+    "SearchCompleted": "Search completed successfully.",
+    "TakePhoto": "Take Photo",
     "Menu:Pets": "Pets",
     "Menu:CoreService": "Core Service"
   }

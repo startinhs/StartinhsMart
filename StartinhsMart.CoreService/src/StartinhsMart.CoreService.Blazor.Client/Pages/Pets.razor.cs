@@ -71,9 +71,10 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
         private string ImagePreview = "";
         private string PredictionResult = "";
         private byte[] ImageData;
-        private bool showImageSearchModal = false;
+        private bool ShowImageSearch = false;
         private bool isPredicting = false;
-        private bool showPredictionResult = false;
+        private bool OnImageSearchLoading = false;
+        private Modal WebcamModal { get; set; } = new();
         
         public Pets()
         {
@@ -512,35 +513,29 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
         }
 
         // Image Search Methods
-        private void ShowImageSearchModal()
-        {
-            showImageSearchModal = true;
-            StateHasChanged();
-        }
-
-        private async void CloseImageSearchModal()
-        {
-            showImageSearchModal = false;
-            ImagePreview = "";
-            PredictionResult = "";
-            ImageData = null;
-            isPredicting = false;
-            
-            // Reset bộ lọc khi đóng modal
-            Filter.Breed = "";
-            await GetPetsAsync();
-            StateHasChanged();
-        }
-
         private async Task UploadImage(InputFileChangeEventArgs e)
         {
-            var file = e.File;
-            if (file != null)
+            try
             {
-                var buffer = new byte[file.Size];
-                await file.OpenReadStream().ReadAsync(buffer);
-                ImageData = buffer;
-                ImagePreview = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+                var file = e.File;
+                if (file != null)
+                {
+                    OnImageSearchLoading = true;
+                    StateHasChanged();
+                    
+                    var buffer = new byte[file.Size];
+                    await file.OpenReadStream().ReadAsync(buffer);
+                    ImageData = buffer;
+                    ImagePreview = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+                    
+                    OnImageSearchLoading = false;
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                OnImageSearchLoading = false;
+                await HandleErrorAsync(ex);
             }
         }
 
@@ -548,7 +543,7 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
         {
             if (ImageData == null)
             {
-                PredictionResult = "Please upload a photo or take a photo.";
+                await UiMessageService.Info(L["PleaseUploadImage"]);
                 return;
             }
 
@@ -588,13 +583,13 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
             }
 
             isPredicting = false;
-            showImageSearchModal = false;
             
             // Sử dụng kết quả dự đoán để lọc dữ liệu ngầm
             if (!string.IsNullOrEmpty(PredictionResult))
             {
                 Filter.Breed = PredictionResult;
                 await GetPetsAsync();
+                await UiMessageService.Success(L["SearchCompleted"]);
             }
             
             StateHasChanged();
@@ -602,7 +597,8 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
 
         private async Task ShowWebcamPopup()
         {
-            await JsRuntime.InvokeVoidAsync("showWebcamPopup");
+            await WebcamModal.Show();
+            await JsRuntime.InvokeVoidAsync("startWebcam");
         }
 
         private async Task CaptureImage()
@@ -610,12 +606,14 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
             var base64Image = await JsRuntime.InvokeAsync<string>("captureImage");
             ImagePreview = base64Image;
             ImageData = Convert.FromBase64String(base64Image.Split(',')[1]);
-            await JsRuntime.InvokeVoidAsync("closeWebcamPopup");
+            await WebcamModal.Hide();
+            await JsRuntime.InvokeVoidAsync("stopWebcam");
         }
 
         private async Task CloseWebcamPopup()
         {
-            await JsRuntime.InvokeVoidAsync("closeWebcamPopup");
+            await WebcamModal.Hide();
+            await JsRuntime.InvokeVoidAsync("stopWebcam");
         }
 
 
