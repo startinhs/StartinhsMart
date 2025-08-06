@@ -1,15 +1,13 @@
 // File cleanup functionality
-window.FileCleanup = {
-    clearInputFiles: function () {
-        const fileInputs = document.querySelectorAll('input[type="file"]');
-        fileInputs.forEach(input => {
-            input.value = '';
-        });
-    }
-};
+export function clearInputFiles() {
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+        input.value = '';
+    });
+}
 
 // Webcam functionality
-window.startWebcam = function () {
+export function startWebcam() {
     navigator.mediaDevices.getUserMedia({ video: true })
         .then((stream) => {
             let video = document.getElementById("video");
@@ -18,9 +16,9 @@ window.startWebcam = function () {
         .catch((err) => {
             console.error("Webcam access error:", err);
         });
-};
+}
 
-window.stopWebcam = function () {
+export function stopWebcam() {
     let video = document.getElementById("video");
     let stream = video.srcObject;
     if (stream) {
@@ -28,12 +26,12 @@ window.stopWebcam = function () {
         tracks.forEach(track => track.stop());
     }
     video.srcObject = null;
-};
+}
 
-window.captureImage = function () {
+export function captureImage() {
     let canvas = document.getElementById("canvas");
     let video = document.getElementById("video");
     let context = canvas.getContext("2d");
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     return canvas.toDataURL("image/jpeg");
-};
+}

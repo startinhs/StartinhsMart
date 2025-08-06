@@ -411,11 +411,18 @@
                       <DisplayTemplate>
                         @if (context.ImageId != null && context.ImageId != Guid.Empty)
                         {   
-                            <Icon Name="IconName.FileAlt" Clicked="async () => await DownloadFileAsync(context.ImageId!.Value)" />
+                            <div class="pet-image-container">
+                                <img src="@GetImageUrl(context.ImageId!.Value)" 
+                                     alt="Pet Image" 
+                                     style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
+                                     @onclick="async () => await OpenImageModal(context.ImageId!.Value)" />
+                            </div>
                         }
                         else
                         {
-                            <span>"-"</span>
+                            <div class="pet-image-placeholder">
+                                <i class="fa fa-image"></i>
+                            </div>
                         }
                       </DisplayTemplate>
               </DataGridColumn>
@@ -537,12 +544,30 @@
                     
                         <Field>
                             <FieldLabel>@L["Image"]</FieldLabel>
-                            <InputFile class="form-control file-input" OnChange="@OnNewPetImageChanged" required/>
-                            @if (OnNewPetImageLoading)
+                            @if (NewPet.ImageId != null && NewPet.ImageId != Guid.Empty)
                             {
-                                <p>@L["FileUploading"]</p>
+                                <div class="mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="@GetImageUrl(NewPet.ImageId!.Value)" 
+                                             alt="Pet Image" 
+                                             class="modal-pet-image"
+                                             @onclick="async () => await OpenImageModal(NewPet.ImageId!.Value)" />
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="@L["DownloadSelectedFile"].Value" @onclick="@(async () => await DownloadFileAsync(NewPet.ImageId!.Value))"><i class="fa fa-file-alt"></i></button>
+                                            <button type="button" class="btn btn-primary btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="@L["RemoveSelectedFile"].Value" @onclick="(() => { NewPet.ImageId = Guid.Empty; })"><i class="fa fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
                             }
-                            <p class="text-muted pt-1"><i class="fa fa-info-circle"></i> @L["MaxFileSizeLimit", 10]</p>
+                            else
+                            {
+                                <InputFile class="form-control file-input" OnChange="@OnNewPetImageChanged" required/>
+                                @if (OnNewPetImageLoading)
+                                {
+                                    <p>@L["FileUploading"]</p>
+                                }
+                                <p class="text-muted pt-1"><i class="fa fa-info-circle"></i> @L["MaxFileSizeLimit", 10]</p>
+                            }
                         </Field>
 
 
@@ -736,9 +761,15 @@
                         @if (HasSelectedPetImage)
                         {
                             <div class="mb-2">
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="@L["DownloadSelectedFile"].Value" @onclick="@(async () => await DownloadFileAsync(EditingPet.ImageId!.Value))"><i class="fa fa-file-alt"></i></button>
-                                    <button type="button" class="btn btn-primary btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="@L["RemoveSelectedFile"].Value" @onclick="(() => { EditingPet.ImageId = Guid.Empty; HasSelectedPetImage = false; })"><i class="fa fa-trash"></i></button>
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="@GetImageUrl(EditingPet.ImageId!.Value)" 
+                                         alt="Pet Image" 
+                                         class="modal-pet-image"
+                                         @onclick="async () => await OpenImageModal(EditingPet.ImageId!.Value)" />
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="@L["DownloadSelectedFile"].Value" @onclick="@(async () => await DownloadFileAsync(EditingPet.ImageId!.Value))"><i class="fa fa-file-alt"></i></button>
+                                        <button type="button" class="btn btn-primary btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="@L["RemoveSelectedFile"].Value" @onclick="(() => { EditingPet.ImageId = Guid.Empty; HasSelectedPetImage = false; })"><i class="fa fa-trash"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -959,5 +990,130 @@
     display: inline-block;
     text-align: center;
 }
+
+        .pet-image-container {
+            transition: transform 0.2s ease-in-out;
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: inline-block;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+        }
+        
+        .pet-image-container:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .pet-image-placeholder {
+            transition: background-color 0.2s ease-in-out;
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        /* Modal image styles */
+        .modal-pet-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .modal-pet-image:hover {
+            transform: scale(1.05);
+        }
+
+        /* Image modal styles */
+        .image-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .image-modal-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .image-modal-controls {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .image-modal-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .image-modal-btn:hover {
+            background: #0056b3;
+        }
+
+.pet-image-placeholder:hover {
+    background-color: #e9ecef;
+}
 </style>
+
+<!-- Image Modal for enlarged view -->
+@if (showImageModal)
+{
+    <div class="image-modal-overlay" @onclick="CloseImageModal">
+        <div class="image-modal-content" @onclick:stopPropagation="true">
+            <button class="image-modal-close" @onclick="CloseImageModal">&times;</button>
+            <img src="@enlargedImageUrl" alt="Enlarged Pet Image" class="image-modal-img" style="transform: scale(@currentZoom)" />
+            <div class="image-modal-controls">
+                <button class="image-modal-btn" @onclick="ZoomIn">Zoom In</button>
+                <button class="image-modal-btn" @onclick="ZoomOut">Zoom Out</button>
+                <button class="image-modal-btn" @onclick="ResetZoom">Reset</button>
+            </div>
+        </div>
+    </div>
+}
 

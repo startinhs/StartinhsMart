@@ -8,3 +8,8 @@ public class GetFileInput
 
     public Guid FileId { get; set; }
 }
+
+public class GetImageInput
+{
+    public Guid ImageId { get; set; }
+}

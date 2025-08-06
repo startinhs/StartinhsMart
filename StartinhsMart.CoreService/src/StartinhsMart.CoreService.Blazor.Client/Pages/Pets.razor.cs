@@ -76,6 +76,14 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
         private bool OnImageSearchLoading = false;
         private Modal WebcamModal { get; set; } = new();
         
+        // Image modal properties
+        private bool showImageModal = false;
+        private string enlargedImageUrl = "";
+        private double currentZoom = 1.0;
+        private const double ZOOM_STEP = 0.2;
+        private const double MIN_ZOOM = 0.5;
+        private const double MAX_ZOOM = 3.0;
+        
         public Pets()
         {
             NewPet = new PetCreateDto();
@@ -191,7 +199,7 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
 
             SelectedCreateTab = "pet-create-tab";
             
-            await _jsObjectRef!.InvokeVoidAsync("FileCleanup.clearInputFiles");
+            await _jsObjectRef!.InvokeVoidAsync("clearInputFiles");
             await NewPetValidations.ClearAll();
             await CreatePetModal.Show();
         }
@@ -209,7 +217,7 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
         {
             SelectedEditTab = "pet-edit-tab";
             
-            await _jsObjectRef!.InvokeVoidAsync("FileCleanup.clearInputFiles");
+            await _jsObjectRef!.InvokeVoidAsync("clearInputFiles");
             var pet = await PetsAppService.GetAsync(input.Id);
             
             EditingPetId = pet.Id;
@@ -360,6 +368,12 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
             var token = (await PetsAppService.GetDownloadTokenAsync()).Token;
             var remoteService = await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("CoreService") ?? await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
             NavigationManager.NavigateTo($"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/pets/file?DownloadToken={token}&FileId={fileId}", forceLoad: true);
+        }
+
+        private string GetImageUrl(Guid fileId)
+        {
+            var remoteService = RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("CoreService").Result ?? RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default").Result;
+            return $"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/pets/image?ImageId={fileId}";
         }
 
         protected virtual async Task OnCategoryChangedAsync(string? category)
@@ -598,22 +612,61 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
         private async Task ShowWebcamPopup()
         {
             await WebcamModal.Show();
-            await JsRuntime.InvokeVoidAsync("startWebcam");
+            await _jsObjectRef!.InvokeVoidAsync("startWebcam");
         }
 
         private async Task CaptureImage()
         {
-            var base64Image = await JsRuntime.InvokeAsync<string>("captureImage");
+            var base64Image = await _jsObjectRef!.InvokeAsync<string>("captureImage");
             ImagePreview = base64Image;
             ImageData = Convert.FromBase64String(base64Image.Split(',')[1]);
             await WebcamModal.Hide();
-            await JsRuntime.InvokeVoidAsync("stopWebcam");
+            await _jsObjectRef!.InvokeVoidAsync("stopWebcam");
         }
 
         private async Task CloseWebcamPopup()
         {
             await WebcamModal.Hide();
-            await JsRuntime.InvokeVoidAsync("stopWebcam");
+            await _jsObjectRef!.InvokeVoidAsync("stopWebcam");
+        }
+
+        // Image modal methods
+        private async Task OpenImageModal(Guid fileId)
+        {
+            enlargedImageUrl = GetImageUrl(fileId);
+            showImageModal = true;
+            currentZoom = 1.0;
+            StateHasChanged();
+        }
+
+        private async Task CloseImageModal()
+        {
+            showImageModal = false;
+            StateHasChanged();
+        }
+
+        private async Task ZoomIn()
+        {
+            if (currentZoom < MAX_ZOOM)
+            {
+                currentZoom += ZOOM_STEP;
+                StateHasChanged();
+            }
+        }
+
+        private async Task ZoomOut()
+        {
+            if (currentZoom > MIN_ZOOM)
+            {
+                currentZoom -= ZOOM_STEP;
+                StateHasChanged();
+            }
+        }
+
+        private async Task ResetZoom()
+        {
+            currentZoom = 1.0;
+            StateHasChanged();
         }
 
 
