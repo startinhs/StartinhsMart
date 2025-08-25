@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\common.props" />
 
@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
     <PackageReference Include="Volo.Abp.EntityFrameworkCore.PostgreSql" Version="9.0.4" />
     <PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="9.0.4" />
     <PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="9.0.4" />
@@ -29,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>compile; contentFiles; build; buildMultitargeting; buildTransitive; analyzers; native</PrivateAssets>
     </PackageReference>
