@@ -70,6 +70,13 @@
     "SearchCompleted": "Search completed successfully.",
     "TakePhoto": "Take Photo",
     "Menu:Pets": "Pets",
-    "Menu:CoreService": "Core Service"
+    "Menu:Categories": "Categories",
+    "Menu:CoreService": "Core Service",
+    "Categories": "Categories",
+    "NewCategory": "New Category",
+    "Slug": "Slug",
+    "SortOrder": "Sort Order",
+    "IsActive": "Is Active",
+    "Permission:Categories": "Categories"
   }
 }

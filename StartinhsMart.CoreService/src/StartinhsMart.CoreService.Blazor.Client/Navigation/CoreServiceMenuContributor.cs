@@ -75,6 +75,15 @@ public class CoreServiceMenuContributor : IMenuContributor
                 icon: "fa fa-paw",
                 requiredPermissionName: CoreServicePermissions.Pets.Default)
         );
+
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                CoreServiceMenus.Categories,
+                l["Menu:Categories"],
+                url: "/categories",
+                icon: "fa fa-list",
+                requiredPermissionName: CoreServicePermissions.Categories.Default)
+        );
     }
 
     private async Task ConfigureUserMenuAsync(MenuConfigurationContext context)

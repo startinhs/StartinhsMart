@@ -70,6 +70,13 @@
     "SearchCompleted": "Tìm kiếm hoàn thành thành công.",
     "TakePhoto": "Chụp ảnh",
     "Menu:Pets": "Thú cưng",
-    "Menu:CoreService": "Dịch vụ cốt lõi"
+    "Menu:Categories": "Danh mục",
+    "Menu:CoreService": "Dịch vụ cốt lõi",
+    "Categories": "Danh mục",
+    "NewCategory": "Danh mục mới",
+    "Slug": "Slug",
+    "SortOrder": "Thứ tự sắp xếp",
+    "IsActive": "Hoạt động",
+    "Permission:Categories": "Danh mục"
   }
 } 
