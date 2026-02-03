@@ -2,6 +2,7 @@ using System;
 using StartinhsMart.CoreService.Shared;
 using Volo.Abp.AutoMapper;
 using StartinhsMart.CoreService.Pets;
+using StartinhsMart.CoreService.Categories;
 using AutoMapper;
 
 namespace StartinhsMart.CoreService;
@@ -17,5 +18,7 @@ public class CoreServiceApplicationAutoMapperProfile : Profile
         CreateMap<Pet, PetDto>();
         CreateMap<Pet, PetExcelDto>();
         CreateMap<AppFileDescriptors.AppFileDescriptor, AppFileDescriptorDto>();
+
+        CreateMap<Category, CategoryDto>();
     }
 }

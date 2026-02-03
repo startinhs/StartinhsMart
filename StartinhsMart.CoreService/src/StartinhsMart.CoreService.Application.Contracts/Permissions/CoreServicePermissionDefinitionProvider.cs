@@ -18,6 +18,11 @@ public class CoreServicePermissionDefinitionProvider : PermissionDefinitionProvi
         petPermission.AddChild(CoreServicePermissions.Pets.Create, L("Permission:Create"));
         petPermission.AddChild(CoreServicePermissions.Pets.Edit, L("Permission:Edit"));
         petPermission.AddChild(CoreServicePermissions.Pets.Delete, L("Permission:Delete"));
+
+        var categoryPermission = myGroup.AddPermission(CoreServicePermissions.Categories.Default, L("Permission:Categories"));
+        categoryPermission.AddChild(CoreServicePermissions.Categories.Create, L("Permission:Create"));
+        categoryPermission.AddChild(CoreServicePermissions.Categories.Edit, L("Permission:Edit"));
+        categoryPermission.AddChild(CoreServicePermissions.Categories.Delete, L("Permission:Delete"));
     }
 
     private static LocalizableString L(string name)

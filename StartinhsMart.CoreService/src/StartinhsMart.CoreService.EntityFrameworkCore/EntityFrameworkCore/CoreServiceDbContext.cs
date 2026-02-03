@@ -1,4 +1,5 @@
 using StartinhsMart.CoreService.Pets;
+using StartinhsMart.CoreService.Categories;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -28,6 +29,7 @@ public class CoreServiceDbContext :
 {
     public DbSet<AppFileDescriptors.AppFileDescriptor> AppFileDescriptors { get; set; } = null!;
     public DbSet<Pet> Pets { get; set; } = null!;
+    public DbSet<Category> Categories { get; set; } = null!;
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
 
     #region Entities from the modules
@@ -117,6 +119,18 @@ public class CoreServiceDbContext :
                         b.ConfigureByConvention();
                         b.Property(x => x.Name);
                         b.Property(x => x.MimeType);
+                    });
+
+        builder.Entity<Category>(b =>
+                    {
+                        b.ToTable(CoreServiceConsts.DbTablePrefix + "Categories", CoreServiceConsts.DbSchema);
+                        b.ConfigureByConvention();
+                        b.Property(x => x.Name).IsRequired().HasMaxLength(256);
+                        b.Property(x => x.Slug).HasMaxLength(256);
+                        b.Property(x => x.Description).HasMaxLength(2000);
+                        b.HasIndex(x => x.Name);
+                        b.HasIndex(x => x.Slug);
+                        b.HasIndex(x => x.ParentCategoryId);
                     });
     }
 }

@@ -1,4 +1,5 @@
 using StartinhsMart.CoreService.Pets;
+using StartinhsMart.CoreService.Categories;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Uow;
@@ -49,6 +50,7 @@ public class CoreServiceEntityFrameworkCoreModule : AbpModule
              * default repositories only for aggregate roots */
             options.AddDefaultRepositories(includeAllEntities: true);
             options.AddRepository<Pet, Pets.EfCorePetRepository>();
+            options.AddRepository<Category, Categories.EfCoreCategoryRepository>();
 
         });
 
