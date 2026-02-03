@@ -2,12 +2,10 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 using JetBrains.Annotations;
 using Volo.Abp.Domain.Entities;
-
 using Volo.Abp;
 
 namespace StartinhsMart.CoreService.Pets
@@ -53,11 +51,11 @@ namespace StartinhsMart.CoreService.Pets
 
         public virtual bool IsStock { get; set; }
 
-        public string ConcurrencyStamp { get; set; }
+        public string ConcurrencyStamp { get; set; } = null!;
 
         protected Pet()
         {
-
+            ConcurrencyStamp = Guid.NewGuid().ToString("N");
         }
 
         public Pet(Guid id, bool isBooth, bool isStock, Guid? imageId = null, string? category = null, string? name = null, string? breed = null, float? age = null, string? gender = null, string? color = null, float? weight = null, string? healthStatus = null, int? vaccinations = null, string? description = null, decimal? price = null, int? quantity = null)
