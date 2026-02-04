@@ -84,6 +84,15 @@ public class CoreServiceMenuContributor : IMenuContributor
                 icon: "fa fa-list",
                 requiredPermissionName: CoreServicePermissions.Categories.Default)
         );
+
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                CoreServiceMenus.Orders,
+                l["Menu:Orders"],
+                url: "/orders",
+                icon: "fa fa-shopping-cart",
+                requiredPermissionName: CoreServicePermissions.Orders.Default)
+        );
     }
 
     private async Task ConfigureUserMenuAsync(MenuConfigurationContext context)

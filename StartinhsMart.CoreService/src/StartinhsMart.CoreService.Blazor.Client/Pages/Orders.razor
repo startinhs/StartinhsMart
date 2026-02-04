@@ -1,0 +1,537 @@
+@page "/orders"
+
+@attribute [Authorize(CoreServicePermissions.Orders.Default)]
+@using StartinhsMart.CoreService.Orders
+@using StartinhsMart.CoreService.Pets
+@using StartinhsMart.CoreService.Localization
+@using StartinhsMart.CoreService.Shared
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Components.Web
+@using Blazorise
+@using Blazorise.Components
+@using Blazorise.DataGrid
+@using Volo.Abp.BlazoriseUI
+@using Volo.Abp.BlazoriseUI.Components
+@using Volo.Abp.ObjectMapping
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using StartinhsMart.CoreService.Permissions
+@using Volo.Abp.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components
+@using Volo.Abp.Http.Client
+@inherits CoreServiceComponentBase
+@inject IOrdersAppService OrdersAppService
+@inject IUiMessageService UiMessageService
+@inject AbpBlazorMessageLocalizerHelper<CoreServiceResource> LH
+@inject NavigationManager NavigationManager
+
+@* ************************* PAGE HEADER ************************* *@
+<PageHeader Title="@L["Orders"]" BreadcrumbItems="BreadcrumbItems" Toolbar="Toolbar">
+</PageHeader>
+
+@* ************************* SEARCH ************************* *@
+<Card>
+    <CardBody>
+        <Row>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <Form id="OrderSearchForm">
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit @bind-Text="@Filter.FilterText"
+                                        Autofocus="true"
+                                        Placeholder="@L["Search"]">
+                                </TextEdit>
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <SubmitButton Form="OrderSearchForm" Clicked="GetOrdersAsync">
+                                    <Icon Name="IconName.Search" Class="me-1"></Icon>@L["Search"]
+                                </SubmitButton>
+                            </Addon>
+                        </Addons>
+                    </Form>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <Button Color="Color.Primary" Outline Style="width:100%" id="AdvancedFilterSectionToggler"
+                            Clicked="@(() => ShowAdvancedFilters = !ShowAdvancedFilters)">@L["Filters"]
+                        <i aria-hidden="true" class="fa ms-1 @(!ShowAdvancedFilters ? "fa-angle-down" : "fa-angle-up")"></i>
+                    </Button>
+                </div>
+            </div>
+        </Row>
+
+        @if (ShowAdvancedFilters)
+        {
+            <Div Style="display:block" class="mt-3">
+                <Row>
+                    <Div ColumnSize="ColumnSize.Is12.OnTablet.Is6.OnDesktop">
+                        <Field>
+                            <FieldLabel>@L["Status"]</FieldLabel>
+                            <Select TValue="OrderStatus?" @bind-SelectedValue="@Filter.Status">
+                                <SelectItem Value="@((OrderStatus?)null)">@L["All"]</SelectItem>
+                                <SelectItem Value="@OrderStatus.Pending">@L["Pending"]</SelectItem>
+                                <SelectItem Value="@OrderStatus.Confirmed">@L["Confirmed"]</SelectItem>
+                                <SelectItem Value="@OrderStatus.Processing">@L["Processing"]</SelectItem>
+                                <SelectItem Value="@OrderStatus.Shipped">@L["Shipped"]</SelectItem>
+                                <SelectItem Value="@OrderStatus.Delivered">@L["Delivered"]</SelectItem>
+                                <SelectItem Value="@OrderStatus.Cancelled">@L["Cancelled"]</SelectItem>
+                                <SelectItem Value="@OrderStatus.Refunded">@L["Refunded"]</SelectItem>
+                            </Select>
+                        </Field>
+                    </Div>
+                    <Div ColumnSize="ColumnSize.Is12.OnTablet.Is6.OnDesktop">
+                        <Field>
+                            <FieldLabel>@L["PaymentStatus"]</FieldLabel>
+                            <Select TValue="PaymentStatus?" @bind-SelectedValue="@Filter.PaymentStatus">
+                                <SelectItem Value="@((PaymentStatus?)null)">@L["All"]</SelectItem>
+                                <SelectItem Value="@PaymentStatus.Pending">@L["Pending"]</SelectItem>
+                                <SelectItem Value="@PaymentStatus.Completed">@L["Completed"]</SelectItem>
+                                <SelectItem Value="@PaymentStatus.Failed">@L["Failed"]</SelectItem>
+                                <SelectItem Value="@PaymentStatus.Refunded">@L["Refunded"]</SelectItem>
+                            </Select>
+                        </Field>
+                    </Div>
+                </Row>
+                <Row>
+                    <Div ColumnSize="ColumnSize.Is12">
+                        <Button Color="Color.Info" Clicked="GetOrdersAsync">@L["Filter"]</Button>
+                    </Div>
+                </Row>
+            </Div>
+        }
+    </CardBody>
+</Card>
+
+@* ************************* DATA GRID ************************* *@
+<Card>
+    <CardBody>
+        <DataGrid @ref="OrdersDataGrid"
+                TItem="OrderDto"
+                Data="OrderList"
+                ReadData="OnDataGridReadAsync"
+                TotalItems="TotalCount"
+                ShowPager="true"
+                Responsive="true">
+            <DataGridColumns>
+                <DataGridColumn Field="@nameof(OrderDto.Id)" Caption="@L["Actions"]" Width="200px">
+                    <DisplayTemplate>
+                        <EntityActions>
+                            <EntityAction IconName="IconName.Eye" Text="@L["View"]" 
+                                        Clicked="@(async () => await ViewOrderDetailsAsync(context))" />
+                            @if (CanUpdateStatus && context.Status != OrderStatus.Cancelled && context.Status != OrderStatus.Delivered)
+                            {
+                                <EntityAction IconName="IconName.Edit" Text="@L["UpdateStatus"]" 
+                                            Clicked="@(async () => await OpenUpdateStatusModal(context))" />
+                            }
+                            @if (CanCancelOrder && context.Status != OrderStatus.Cancelled)
+                            {
+                                <EntityAction IconName="IconName.Ban" Text="@L["Cancel"]" 
+                                            Clicked="@(async () => await OpenCancelOrderModal(context))" />
+                            }
+                        </EntityActions>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn Field="@nameof(OrderDto.OrderNumber)" Caption="@L["OrderNumber"]" />
+                <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["Customer"]" />
+                <DataGridColumn Field="@nameof(OrderDto.TotalAmount)" Caption="@L["TotalAmount"]" DisplayFormat="{0:C}" />
+                <DataGridColumn Field="@nameof(OrderDto.Status)" Caption="@L["Status"]" Width="120px">
+                    <DisplayTemplate>
+                        <Badge Color="@GetStatusColor(context.Status)">
+                            @L[$"Enum:OrderStatus.{context.Status}"]
+                        </Badge>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn Field="@nameof(OrderDto.PaymentStatus)" Caption="@L["PaymentStatus"]" Width="120px">
+                    <DisplayTemplate>
+                        <Badge Color="@GetPaymentStatusColor(context.PaymentStatus)">
+                            @L[$"Enum:PaymentStatus.{context.PaymentStatus}"]
+                        </Badge>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" DisplayFormat="{0:G}" />
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+@* ************************* VIEW DETAILS MODAL ************************* *@
+<Modal @ref="ViewDetailsModal" Size="ModalSize.Large">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["OrderDetails"]</ModalTitle>
+            <CloseButton Clicked="CloseViewDetailsModal"></CloseButton>
+        </ModalHeader>
+        <ModalBody>
+            @if (ViewingOrder != null)
+            {
+                <Card>
+                    <CardBody>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <Field>
+                                    <FieldLabel>@L["OrderNumber"]</FieldLabel>
+                                    <FieldBody>
+                                        <strong>@ViewingOrder.OrderNumber</strong>
+                                    </FieldBody>
+                                </Field>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <Field>
+                                    <FieldLabel>@L["OrderDate"]</FieldLabel>
+                                    <FieldBody>
+                                        @ViewingOrder.CreationTime.ToString("G")
+                                    </FieldBody>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <Field>
+                                    <FieldLabel>@L["Status"]</FieldLabel>
+                                    <FieldBody>
+                                        <Badge Color="@GetStatusColor(ViewingOrder.Status)">
+                                            @L[$"Enum:OrderStatus.{ViewingOrder.Status}"]
+                                        </Badge>
+                                    </FieldBody>
+                                </Field>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <Field>
+                                    <FieldLabel>@L["PaymentStatus"]</FieldLabel>
+                                    <FieldBody>
+                                        <Badge Color="@GetPaymentStatusColor(ViewingOrder.PaymentStatus)">
+                                            @L[$"Enum:PaymentStatus.{ViewingOrder.PaymentStatus}"]
+                                        </Badge>
+                                    </FieldBody>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Field>
+                                    <FieldLabel>@L["Customer"]</FieldLabel>
+                                    <FieldBody>
+                                        @ViewingOrder.CustomerName
+                                        @if (!string.IsNullOrEmpty(ViewingOrder.CustomerEmail))
+                                        {
+                                            <text> (@ViewingOrder.CustomerEmail)</text>
+                                        }
+                                    </FieldBody>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Field>
+                                    <FieldLabel>@L["ShippingAddress"]</FieldLabel>
+                                    <FieldBody>@ViewingOrder.ShippingAddress</FieldBody>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <Field>
+                                    <FieldLabel>@L["ShippingPhone"]</FieldLabel>
+                                    <FieldBody>@ViewingOrder.ShippingPhone</FieldBody>
+                                </Field>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <Field>
+                                    <FieldLabel>@L["PaymentMethod"]</FieldLabel>
+                                    <FieldBody>@L[$"Enum:PaymentMethod.{ViewingOrder.PaymentMethod}"]</FieldBody>
+                                </Field>
+                            </Column>
+                        </Row>
+                        @if (!string.IsNullOrEmpty(ViewingOrder.Note))
+                        {
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Field>
+                                        <FieldLabel>@L["Note"]</FieldLabel>
+                                        <FieldBody>@ViewingOrder.Note</FieldBody>
+                                    </Field>
+                                </Column>
+                            </Row>
+                        }
+                    </CardBody>
+                </Card>
+
+                <Card Class="mt-3">
+                    <CardHeader>
+                        <CardTitle>@L["OrderItems"]</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHeaderCell>@L["PetName"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Quantity"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["UnitPrice"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["TotalPrice"]</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @foreach (var item in ViewingOrder.Items)
+                                {
+                                    <TableRow>
+                                        <TableRowCell>@item.PetName</TableRowCell>
+                                        <TableRowCell>@item.Quantity</TableRowCell>
+                                        <TableRowCell>@item.UnitPrice.ToString("C")</TableRowCell>
+                                        <TableRowCell>@item.TotalPrice.ToString("C")</TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                            <TableFooter>
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.End">
+                                        <strong>@L["TotalAmount"]:</strong>
+                                    </TableRowCell>
+                                    <TableRowCell>
+                                        <strong>@ViewingOrder.TotalAmount.ToString("C")</strong>
+                                    </TableRowCell>
+                                </TableRow>
+                            </TableFooter>
+                        </Table>
+                    </CardBody>
+                </Card>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="CloseViewDetailsModal">@L["Close"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@* ************************* UPDATE STATUS MODAL ************************* *@
+<Modal @ref="UpdateStatusModal">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["UpdateStatus"]</ModalTitle>
+            <CloseButton Clicked="CloseUpdateStatusModal"></CloseButton>
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["OrderNumber"]</FieldLabel>
+                <FieldBody>
+                    <strong>@UpdatingOrderNumber</strong>
+                </FieldBody>
+            </Field>
+            <Field>
+                <FieldLabel>@L["NewStatus"]</FieldLabel>
+                <Select TValue="OrderStatus" @bind-SelectedValue="@NewStatus">
+                    <SelectItem Value="@OrderStatus.Pending">@L["Pending"]</SelectItem>
+                    <SelectItem Value="@OrderStatus.Confirmed">@L["Confirmed"]</SelectItem>
+                    <SelectItem Value="@OrderStatus.Processing">@L["Processing"]</SelectItem>
+                    <SelectItem Value="@OrderStatus.Shipped">@L["Shipped"]</SelectItem>
+                    <SelectItem Value="@OrderStatus.Delivered">@L["Delivered"]</SelectItem>
+                </Select>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="CloseUpdateStatusModal">@L["Cancel"]</Button>
+            <Button Color="Color.Primary" Clicked="UpdateOrderStatusAsync">@L["Update"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@* ************************* CANCEL ORDER MODAL ************************* *@
+<Modal @ref="CancelOrderModal">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["CancelOrder"]</ModalTitle>
+            <CloseButton Clicked="CloseCancelOrderModal"></CloseButton>
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["OrderNumber"]</FieldLabel>
+                <FieldBody>
+                    <strong>@CancellingOrderNumber</strong>
+                </FieldBody>
+            </Field>
+            <Field>
+                <FieldLabel>@L["CancelReason"]</FieldLabel>
+                <MemoEdit @bind-Text="CancelReason" Rows="3" Placeholder="@L["EnterCancelReason"]" />
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="CloseCancelOrderModal">@L["Close"]</Button>
+            <Button Color="Color.Danger" Clicked="CancelOrderAsync">@L["ConfirmCancel"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@* ************************* CREATE ORDER MODAL ************************* *@
+<Modal @ref="CreateOrderModal" Size="ModalSize.Large" Closing="@CreateOrderModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Centered="true">
+        <Form id="CreateOrderForm">
+            <ModalHeader>
+                <ModalTitle>@L["NewOrder"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateOrderModalAsync" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@NewOrderValidations"
+                            Mode="ValidationMode.Auto"
+                            Model="@NewOrder"
+                            ValidateOnLoad="false">
+                    
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel>@L["CustomerName"]</FieldLabel>
+                                    <TextEdit @bind-Text="@NewOrder.CustomerName">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel>@L["CustomerEmail"]</FieldLabel>
+                                    <TextEdit @bind-Text="@NewOrder.CustomerEmail">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel>@L["ShippingAddress"] *</FieldLabel>
+                                    <TextEdit @bind-Text="@NewOrder.ShippingAddress">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel>@L["ShippingPhone"] *</FieldLabel>
+                                    <TextEdit @bind-Text="@NewOrder.ShippingPhone">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel>@L["PaymentMethod"] *</FieldLabel>
+                                    <Select TValue="PaymentMethod" @bind-SelectedValue="@NewOrder.PaymentMethod">
+                                        <SelectItem Value="@PaymentMethod.Cash">@L["Enum:PaymentMethod.Cash"]</SelectItem>
+                                        <SelectItem Value="@PaymentMethod.CreditCard">@L["Enum:PaymentMethod.CreditCard"]</SelectItem>
+                                        <SelectItem Value="@PaymentMethod.DebitCard">@L["Enum:PaymentMethod.DebitCard"]</SelectItem>
+                                        <SelectItem Value="@PaymentMethod.BankTransfer">@L["Enum:PaymentMethod.BankTransfer"]</SelectItem>
+                                        <SelectItem Value="@PaymentMethod.PayPal">@L["Enum:PaymentMethod.PayPal"]</SelectItem>
+                                        <SelectItem Value="@PaymentMethod.VNPay">@L["Enum:PaymentMethod.VNPay"]</SelectItem>
+                                        <SelectItem Value="@PaymentMethod.Momo">@L["Enum:PaymentMethod.Momo"]</SelectItem>
+                                        <SelectItem Value="@PaymentMethod.ZaloPay">@L["Enum:PaymentMethod.ZaloPay"]</SelectItem>
+                                    </Select>
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel>@L["Note"]</FieldLabel>
+                                    <MemoEdit @bind-Text="@NewOrder.Note" Rows="2">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </MemoEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+
+                    <Divider />
+
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Heading Size="HeadingSize.Is5">@L["OrderItems"] *</Heading>
+                        </Column>
+                    </Row>
+
+                    @for (int i = 0; i < NewOrder.Items.Count; i++)
+                    {
+                        var index = i;
+                        var item = NewOrder.Items[index];
+                        <Card Class="mb-2">
+                            <CardBody>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is8">
+                                        <Field>
+                                            <FieldLabel>@L["Pet"] *</FieldLabel>
+                                            <Select TValue="Guid" @bind-SelectedValue="@item.PetId">
+                                                <SelectItem Value="Guid.Empty">@L["SelectPet"]</SelectItem>
+                                                @foreach (var pet in AvailablePets)
+                                                {
+                                                    <SelectItem Value="@pet.Id">@pet.Name - @pet.Breed (@((pet.Price ?? 0).ToString("C")))</SelectItem>
+                                                }
+                                            </Select>
+                                        </Field>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is3">
+                                        <Field>
+                                            <FieldLabel>@L["Quantity"] *</FieldLabel>
+                                            <NumericPicker TValue="int" @bind-Value="@item.Quantity" Min="1" Decimals="0" />
+                                        </Field>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is1">
+                                        <Field>
+                                            <FieldLabel>&nbsp;</FieldLabel>
+                                            <Button Color="Color.Danger" Clicked="@(() => RemoveOrderItem(index))" 
+                                                    Disabled="@(NewOrder.Items.Count <= 1)">
+                                                <Icon Name="IconName.Delete" />
+                                            </Button>
+                                        </Field>
+                                    </Column>
+                                </Row>
+                            </CardBody>
+                        </Card>
+                    }
+
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Button Color="Color.Success" Clicked="AddOrderItem">
+                                <Icon Name="IconName.Add" /> @L["AddItem"]
+                            </Button>
+                        </Column>
+                    </Row>
+
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="CloseCreateOrderModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="CreateOrderForm" Clicked="CreateOrderAsync" />
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>

@@ -7,4 +7,5 @@ public class CoreServiceMenus
     public const string Home = Prefix + ".Home";
     public const string Pets = Prefix + ".Pets";
     public const string Categories = Prefix + ".Categories";
+    public const string Orders = Prefix + ".Orders";
 }

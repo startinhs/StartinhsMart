@@ -13,6 +13,11 @@ public static class CoreServiceDomainErrorCodes
     public const string OrderNotFound = "CoreService:Order:001";
     public const string OrderItemNotFound = "CoreService:Order:002";
     public const string OrderInvalidStatus = "CoreService:Order:003";
+    public const string InvalidOrderStatus = "CoreService:Order:004";
+    public const string InvalidOrderStatusTransition = "CoreService:Order:005";
+    public const string OrderMustHaveItems = "CoreService:Order:006";
+    public const string UserNotAuthenticated = "CoreService:Order:007";
+    public const string CannotCancelOrder = "CoreService:Order:008";
 
     // Cart errors
     public const string CartNotFound = "CoreService:Cart:001";

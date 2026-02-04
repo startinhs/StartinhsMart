@@ -18,6 +18,9 @@
     
     <AbpStyles BundleName="@BlazorLeptonXLiteThemeBundles.Styles.Global" WebAssemblyStyleFiles="GlobalStyles" @rendermode="InteractiveAuto" />
     
+    <!-- Dark Mode Styles -->
+    <link href="dark-mode.css" rel="stylesheet" />
+    
     <HeadOutlet @rendermode="InteractiveAuto" />
 
 </head>
@@ -39,6 +42,9 @@
     </div>
     
     <AbpScripts BundleName="@BlazorLeptonXLiteThemeBundles.Scripts.Global" WebAssemblyScriptFiles="GlobalScripts" @rendermode="InteractiveAuto" />
+
+    <!-- Dark Mode Script -->
+    <script src="dark-mode.js"></script>
 
     <script src="_framework/blazor.web.js"></script>
 

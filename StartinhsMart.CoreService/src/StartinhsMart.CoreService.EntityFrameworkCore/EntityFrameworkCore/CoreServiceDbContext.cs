@@ -1,5 +1,6 @@
 using StartinhsMart.CoreService.Pets;
 using StartinhsMart.CoreService.Categories;
+using StartinhsMart.CoreService.Orders;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -30,6 +31,8 @@ public class CoreServiceDbContext :
     public DbSet<AppFileDescriptors.AppFileDescriptor> AppFileDescriptors { get; set; } = null!;
     public DbSet<Pet> Pets { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<Order> Orders { get; set; } = null!;
+    public DbSet<OrderItem> OrderItems { get; set; } = null!;
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
 
     #region Entities from the modules
@@ -131,6 +134,38 @@ public class CoreServiceDbContext :
                         b.HasIndex(x => x.Name);
                         b.HasIndex(x => x.Slug);
                         b.HasIndex(x => x.ParentCategoryId);
+                    });
+
+        builder.Entity<Order>(b =>
+                    {
+                        b.ToTable(CoreServiceConsts.DbTablePrefix + "Orders", CoreServiceConsts.DbSchema);
+                        b.ConfigureByConvention();
+                        b.Property(x => x.OrderNumber).IsRequired().HasMaxLength(50);
+                        b.Property(x => x.TotalAmount).HasColumnType("decimal(18,2)");
+                        b.Property(x => x.ShippingAddress).IsRequired().HasMaxLength(500);
+                        b.Property(x => x.ShippingPhone).IsRequired().HasMaxLength(20);
+                        b.Property(x => x.CustomerName).HasMaxLength(256);
+                        b.Property(x => x.CustomerEmail).HasMaxLength(256);
+                        b.Property(x => x.Note).HasMaxLength(1000);
+                        b.Property(x => x.CancellationReason).HasMaxLength(500);
+                        b.HasIndex(x => x.OrderNumber);
+                        b.HasIndex(x => x.UserId);
+                        b.HasIndex(x => x.Status);
+                        b.HasIndex(x => x.PaymentStatus);
+                        b.HasIndex(x => x.CreationTime);
+
+                    });
+
+        builder.Entity<OrderItem>(b =>
+                    {
+                        b.ToTable(CoreServiceConsts.DbTablePrefix + "OrderItems", CoreServiceConsts.DbSchema);
+                        b.ConfigureByConvention();
+                        b.Property(x => x.PetName).IsRequired().HasMaxLength(256);
+                        b.Property(x => x.UnitPrice).HasColumnType("decimal(18,2)");
+                        b.Property(x => x.TotalPrice).HasColumnType("decimal(18,2)");
+                        b.HasIndex(x => x.OrderId);
+                        b.HasIndex(x => x.PetId);
+                        b.HasOne(x => x.Order).WithMany(o => o.Items).HasForeignKey(x => x.OrderId).IsRequired();
                     });
     }
 }

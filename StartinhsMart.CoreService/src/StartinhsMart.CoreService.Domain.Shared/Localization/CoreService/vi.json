@@ -77,6 +77,10 @@
     "Slug": "Slug",
     "SortOrder": "Thứ tự sắp xếp",
     "IsActive": "Hoạt động",
-    "Permission:Categories": "Danh mục"
+    "Permission:Categories": "Danh mục",
+    "DarkMode": "Chế độ tối",
+    "SwitchToDarkMode": "Chuyển sang chế độ tối",
+    "SwitchToLightMode": "Chuyển sang chế độ sáng",
+    "Refresh": "Làm mới"
   }
 } 

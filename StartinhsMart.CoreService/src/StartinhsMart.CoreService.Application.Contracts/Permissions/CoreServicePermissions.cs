@@ -23,4 +23,15 @@ public static class CoreServicePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+
+    public static class Orders
+    {
+        public const string Default = GroupName + ".Orders";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+        public const string UpdateStatus = Default + ".UpdateStatus";
+        public const string Cancel = Default + ".Cancel";
+        public const string ViewAll = Default + ".ViewAll";
+    }
 }

@@ -23,6 +23,14 @@ public class CoreServicePermissionDefinitionProvider : PermissionDefinitionProvi
         categoryPermission.AddChild(CoreServicePermissions.Categories.Create, L("Permission:Create"));
         categoryPermission.AddChild(CoreServicePermissions.Categories.Edit, L("Permission:Edit"));
         categoryPermission.AddChild(CoreServicePermissions.Categories.Delete, L("Permission:Delete"));
+
+        var orderPermission = myGroup.AddPermission(CoreServicePermissions.Orders.Default, L("Permission:Orders"));
+        orderPermission.AddChild(CoreServicePermissions.Orders.Create, L("Permission:Create"));
+        orderPermission.AddChild(CoreServicePermissions.Orders.Edit, L("Permission:Edit"));
+        orderPermission.AddChild(CoreServicePermissions.Orders.Delete, L("Permission:Delete"));
+        orderPermission.AddChild(CoreServicePermissions.Orders.UpdateStatus, L("Permission:UpdateStatus"));
+        orderPermission.AddChild(CoreServicePermissions.Orders.Cancel, L("Permission:Cancel"));
+        orderPermission.AddChild(CoreServicePermissions.Orders.ViewAll, L("Permission:ViewAll"));
     }
 
     private static LocalizableString L(string name)
