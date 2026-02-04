@@ -119,16 +119,16 @@
                 <DataGridColumn Field="@nameof(OrderDto.Id)" Caption="@L["Actions"]" Width="200px">
                     <DisplayTemplate>
                         <EntityActions>
-                            <EntityAction IconName="IconName.Eye" Text="@L["View"]" 
+                            <EntityAction Icon="IconName.Eye" Text="@L["View"]" 
                                         Clicked="@(async () => await ViewOrderDetailsAsync(context))" />
                             @if (CanUpdateStatus && context.Status != OrderStatus.Cancelled && context.Status != OrderStatus.Delivered)
                             {
-                                <EntityAction IconName="IconName.Edit" Text="@L["UpdateStatus"]" 
+                                <EntityAction Icon="IconName.Edit" Text="@L["UpdateStatus"]" 
                                             Clicked="@(async () => await OpenUpdateStatusModal(context))" />
                             }
                             @if (CanCancelOrder && context.Status != OrderStatus.Cancelled)
                             {
-                                <EntityAction IconName="IconName.Ban" Text="@L["Cancel"]" 
+                                <EntityAction Icon="IconName.Ban" Text="@L["Cancel"]" 
                                             Clicked="@(async () => await OpenCancelOrderModal(context))" />
                             }
                         </EntityActions>

@@ -156,6 +156,10 @@
     "Enum:PaymentMethod.PayPal": "PayPal",
     "Enum:PaymentMethod.VNPay": "VNPay",
     "Enum:PaymentMethod.Momo": "Momo",
-    "Enum:PaymentMethod.ZaloPay": "ZaloPay"
+    "Enum:PaymentMethod.ZaloPay": "ZaloPay",
+    "ParentCategory": "Parent Category",
+    "None": "None",
+    "SelectCategory": "Select a category",
+    "Unknown": "Unknown"
   }
 }

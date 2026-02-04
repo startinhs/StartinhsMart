@@ -11,7 +11,7 @@ namespace StartinhsMart.CoreService.Pets
 
         Task DeleteAllAsync(
             string? filterText = null,
-            string? category = null,
+            Guid? categoryId = null,
             string? name = null,
             string? breed = null,
             float? ageMin = null,
@@ -33,7 +33,7 @@ namespace StartinhsMart.CoreService.Pets
             CancellationToken cancellationToken = default);
         Task<List<Pet>> GetListAsync(
                     string? filterText = null,
-                    string? category = null,
+                    Guid? categoryId = null,
                     string? name = null,
                     string? breed = null,
                     float? ageMin = null,
@@ -60,7 +60,7 @@ namespace StartinhsMart.CoreService.Pets
 
         Task<long> GetCountAsync(
             string? filterText = null,
-            string? category = null,
+            Guid? categoryId = null,
             string? name = null,
             string? breed = null,
             float? ageMin = null,

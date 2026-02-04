@@ -43,8 +43,8 @@ namespace StartinhsMart.CoreService.Pets
 
         public virtual async Task<PagedResultDto<PetDto>> GetListAsync(GetPetsInput input)
         {
-            var totalCount = await _petRepository.GetCountAsync(input.FilterText, input.Category, input.Name, input.Breed, input.AgeMin, input.AgeMax, input.Gender, input.Color, input.WeightMin, input.WeightMax, input.HealthStatus, input.VaccinationsMin, input.VaccinationsMax, input.Description, input.PriceMin, input.PriceMax, input.QuantityMin, input.QuantityMax, input.IsBooth, input.IsStock);
-            var items = await _petRepository.GetListAsync(input.FilterText, input.Category, input.Name, input.Breed, input.AgeMin, input.AgeMax, input.Gender, input.Color, input.WeightMin, input.WeightMax, input.HealthStatus, input.VaccinationsMin, input.VaccinationsMax, input.Description, input.PriceMin, input.PriceMax, input.QuantityMin, input.QuantityMax, input.IsBooth, input.IsStock, input.Sorting, input.MaxResultCount, input.SkipCount);
+            var totalCount = await _petRepository.GetCountAsync(input.FilterText, input.CategoryId, input.Name, input.Breed, input.AgeMin, input.AgeMax, input.Gender, input.Color, input.WeightMin, input.WeightMax, input.HealthStatus, input.VaccinationsMin, input.VaccinationsMax, input.Description, input.PriceMin, input.PriceMax, input.QuantityMin, input.QuantityMax, input.IsBooth, input.IsStock);
+            var items = await _petRepository.GetListAsync(input.FilterText, input.CategoryId, input.Name, input.Breed, input.AgeMin, input.AgeMax, input.Gender, input.Color, input.WeightMin, input.WeightMax, input.HealthStatus, input.VaccinationsMin, input.VaccinationsMax, input.Description, input.PriceMin, input.PriceMax, input.QuantityMin, input.QuantityMax, input.IsBooth, input.IsStock, input.Sorting, input.MaxResultCount, input.SkipCount);
 
             return new PagedResultDto<PetDto>
             {
@@ -69,7 +69,7 @@ namespace StartinhsMart.CoreService.Pets
         {
 
             var pet = await _petManager.CreateAsync(
-            input.IsBooth, input.IsStock, input.ImageId, input.Category, input.Name, input.Breed, input.Age, input.Gender, input.Color, input.Weight, input.HealthStatus, input.Vaccinations, input.Description, input.Price, input.Quantity
+            input.IsBooth, input.IsStock, input.ImageId, input.CategoryId, input.Name, input.Breed, input.Age, input.Gender, input.Color, input.Weight, input.HealthStatus, input.Vaccinations, input.Description, input.Price, input.Quantity
             );
 
             return ObjectMapper.Map<Pet, PetDto>(pet);
@@ -81,7 +81,7 @@ namespace StartinhsMart.CoreService.Pets
 
             var pet = await _petManager.UpdateAsync(
             id,
-            input.IsBooth, input.IsStock, input.ImageId, input.Category, input.Name, input.Breed, input.Age, input.Gender, input.Color, input.Weight, input.HealthStatus, input.Vaccinations, input.Description, input.Price, input.Quantity, input.ConcurrencyStamp
+            input.IsBooth, input.IsStock, input.ImageId, input.CategoryId, input.Name, input.Breed, input.Age, input.Gender, input.Color, input.Weight, input.HealthStatus, input.Vaccinations, input.Description, input.Price, input.Quantity, input.ConcurrencyStamp
             );
 
             return ObjectMapper.Map<Pet, PetDto>(pet);
@@ -96,7 +96,7 @@ namespace StartinhsMart.CoreService.Pets
                 throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
             }
 
-            var items = await _petRepository.GetListAsync(input.FilterText, input.Category, input.Name, input.Breed, input.AgeMin, input.AgeMax, input.Gender, input.Color, input.WeightMin, input.WeightMax, input.HealthStatus, input.VaccinationsMin, input.VaccinationsMax, input.Description, input.PriceMin, input.PriceMax, input.QuantityMin, input.QuantityMax, input.IsBooth, input.IsStock);
+            var items = await _petRepository.GetListAsync(input.FilterText, input.CategoryId, input.Name, input.Breed, input.AgeMin, input.AgeMax, input.Gender, input.Color, input.WeightMin, input.WeightMax, input.HealthStatus, input.VaccinationsMin, input.VaccinationsMax, input.Description, input.PriceMin, input.PriceMax, input.QuantityMin, input.QuantityMax, input.IsBooth, input.IsStock);
 
             var memoryStream = new MemoryStream();
             await memoryStream.SaveAsAsync(ObjectMapper.Map<List<Pet>, List<PetExcelDto>>(items));
@@ -114,7 +114,7 @@ namespace StartinhsMart.CoreService.Pets
         [Authorize(CoreServicePermissions.Pets.Delete)]
         public virtual async Task DeleteAllAsync(GetPetsInput input)
         {
-            await _petRepository.DeleteAllAsync(input.FilterText, input.Category, input.Name, input.Breed, input.AgeMin, input.AgeMax, input.Gender, input.Color, input.WeightMin, input.WeightMax, input.HealthStatus, input.VaccinationsMin, input.VaccinationsMax, input.Description, input.PriceMin, input.PriceMax, input.QuantityMin, input.QuantityMax, input.IsBooth, input.IsStock);
+            await _petRepository.DeleteAllAsync(input.FilterText, input.CategoryId, input.Name, input.Breed, input.AgeMin, input.AgeMax, input.Gender, input.Color, input.WeightMin, input.WeightMax, input.HealthStatus, input.VaccinationsMin, input.VaccinationsMax, input.Description, input.PriceMin, input.PriceMax, input.QuantityMin, input.QuantityMax, input.IsBooth, input.IsStock);
         }
 
         [AllowAnonymous]

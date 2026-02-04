@@ -20,12 +20,12 @@ namespace StartinhsMart.CoreService.Pets
         }
 
         public virtual async Task<Pet> CreateAsync(
-        bool isBooth, bool isStock, Guid? imageId = null, string? category = null, string? name = null, string? breed = null, float? age = null, string? gender = null, string? color = null, float? weight = null, string? healthStatus = null, int? vaccinations = null, string? description = null, decimal? price = null, int? quantity = null)
+        bool isBooth, bool isStock, Guid? imageId = null, Guid? categoryId = null, string? name = null, string? breed = null, float? age = null, string? gender = null, string? color = null, float? weight = null, string? healthStatus = null, int? vaccinations = null, string? description = null, decimal? price = null, int? quantity = null)
         {
 
             var pet = new Pet(
              GuidGenerator.Create(),
-             isBooth, isStock, imageId, category, name, breed, age, gender, color, weight, healthStatus, vaccinations, description, price, quantity
+             isBooth, isStock, imageId, categoryId, name, breed, age, gender, color, weight, healthStatus, vaccinations, description, price, quantity
              );
 
             return await _petRepository.InsertAsync(pet);
@@ -33,7 +33,7 @@ namespace StartinhsMart.CoreService.Pets
 
         public virtual async Task<Pet> UpdateAsync(
             Guid id,
-            bool isBooth, bool isStock, Guid? imageId = null, string? category = null, string? name = null, string? breed = null, float? age = null, string? gender = null, string? color = null, float? weight = null, string? healthStatus = null, int? vaccinations = null, string? description = null, decimal? price = null, int? quantity = null, [CanBeNull] string? concurrencyStamp = null
+            bool isBooth, bool isStock, Guid? imageId = null, Guid? categoryId = null, string? name = null, string? breed = null, float? age = null, string? gender = null, string? color = null, float? weight = null, string? healthStatus = null, int? vaccinations = null, string? description = null, decimal? price = null, int? quantity = null, [CanBeNull] string? concurrencyStamp = null
         )
         {
 
@@ -42,7 +42,7 @@ namespace StartinhsMart.CoreService.Pets
             pet.IsBooth = isBooth;
             pet.IsStock = isStock;
             pet.ImageId = imageId;
-            pet.Category = category;
+            pet.CategoryId = categoryId;
             pet.Name = name;
             pet.Breed = breed;
             pet.Age = age;

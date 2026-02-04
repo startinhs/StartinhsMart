@@ -9,7 +9,7 @@ namespace StartinhsMart.CoreService.Pets
 
         public string? FilterText { get; set; }
 
-        public string? Category { get; set; }
+        public Guid? CategoryId { get; set; }
         public string? Name { get; set; }
         public string? Breed { get; set; }
         public float? AgeMin { get; set; }

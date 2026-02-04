@@ -21,7 +21,7 @@ namespace StartinhsMart.CoreService.Pets
 
         public virtual async Task DeleteAllAsync(
             string? filterText = null,
-                        string? category = null,
+                        Guid? categoryId = null,
             string? name = null,
             string? breed = null,
             float? ageMin = null,
@@ -45,7 +45,7 @@ namespace StartinhsMart.CoreService.Pets
 
             var query = await GetQueryableAsync();
 
-            query = ApplyFilter(query, filterText, category, name, breed, ageMin, ageMax, gender, color, weightMin, weightMax, healthStatus, vaccinationsMin, vaccinationsMax, description, priceMin, priceMax, quantityMin, quantityMax, isBooth, isStock);
+            query = ApplyFilter(query, filterText, categoryId, name, breed, ageMin, ageMax, gender, color, weightMin, weightMax, healthStatus, vaccinationsMin, vaccinationsMax, description, priceMin, priceMax, quantityMin, quantityMax, isBooth, isStock);
 
             var ids = query.Select(x => x.Id);
             await DeleteManyAsync(ids, cancellationToken: GetCancellationToken(cancellationToken));
@@ -53,7 +53,7 @@ namespace StartinhsMart.CoreService.Pets
 
         public virtual async Task<List<Pet>> GetListAsync(
             string? filterText = null,
-            string? category = null,
+            Guid? categoryId = null,
             string? name = null,
             string? breed = null,
             float? ageMin = null,
@@ -77,14 +77,14 @@ namespace StartinhsMart.CoreService.Pets
             int skipCount = 0,
             CancellationToken cancellationToken = default)
         {
-            var query = ApplyFilter((await GetQueryableAsync()), filterText, category, name, breed, ageMin, ageMax, gender, color, weightMin, weightMax, healthStatus, vaccinationsMin, vaccinationsMax, description, priceMin, priceMax, quantityMin, quantityMax, isBooth, isStock);
+            var query = ApplyFilter((await GetQueryableAsync()), filterText, categoryId, name, breed, ageMin, ageMax, gender, color, weightMin, weightMax, healthStatus, vaccinationsMin, vaccinationsMax, description, priceMin, priceMax, quantityMin, quantityMax, isBooth, isStock);
             query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? PetConsts.GetDefaultSorting(false) : sorting);
             return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
         }
 
         public virtual async Task<long> GetCountAsync(
             string? filterText = null,
-            string? category = null,
+            Guid? categoryId = null,
             string? name = null,
             string? breed = null,
             float? ageMin = null,
@@ -105,14 +105,14 @@ namespace StartinhsMart.CoreService.Pets
             bool? isStock = null,
             CancellationToken cancellationToken = default)
         {
-            var query = ApplyFilter((await GetDbSetAsync()), filterText, category, name, breed, ageMin, ageMax, gender, color, weightMin, weightMax, healthStatus, vaccinationsMin, vaccinationsMax, description, priceMin, priceMax, quantityMin, quantityMax, isBooth, isStock);
+            var query = ApplyFilter((await GetDbSetAsync()), filterText, categoryId, name, breed, ageMin, ageMax, gender, color, weightMin, weightMax, healthStatus, vaccinationsMin, vaccinationsMax, description, priceMin, priceMax, quantityMin, quantityMax, isBooth, isStock);
             return await query.LongCountAsync(GetCancellationToken(cancellationToken));
         }
 
         protected virtual IQueryable<Pet> ApplyFilter(
             IQueryable<Pet> query,
             string? filterText = null,
-            string? category = null,
+            Guid? categoryId = null,
             string? name = null,
             string? breed = null,
             float? ageMin = null,
@@ -133,8 +133,8 @@ namespace StartinhsMart.CoreService.Pets
             bool? isStock = null)
         {
             return query
-                    .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => (e.Category != null && e.Category.Contains(filterText!)) || (e.Name != null && e.Name.Contains(filterText!)) || (e.Breed != null && e.Breed.Contains(filterText!)) || (e.Gender != null && e.Gender.Contains(filterText!)) || (e.Color != null && e.Color.Contains(filterText!)) || (e.HealthStatus != null && e.HealthStatus.Contains(filterText!)) || (e.Description != null && e.Description.Contains(filterText!)))
-                    .WhereIf(!string.IsNullOrWhiteSpace(category), e => e.Category != null && e.Category.Contains(category!))
+                    .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => (e.Name != null && e.Name.Contains(filterText!)) || (e.Breed != null && e.Breed.Contains(filterText!)) || (e.Gender != null && e.Gender.Contains(filterText!)) || (e.Color != null && e.Color.Contains(filterText!)) || (e.HealthStatus != null && e.HealthStatus.Contains(filterText!)) || (e.Description != null && e.Description.Contains(filterText!)))
+                    .WhereIf(categoryId.HasValue, e => e.CategoryId == categoryId)
                     .WhereIf(!string.IsNullOrWhiteSpace(name), e => e.Name != null && e.Name.Contains(name!))
                     .WhereIf(!string.IsNullOrWhiteSpace(breed), e => e.Breed != null && e.Breed.Contains(breed!))
                     .WhereIf(ageMin.HasValue, e => e.Age >= ageMin!.Value)

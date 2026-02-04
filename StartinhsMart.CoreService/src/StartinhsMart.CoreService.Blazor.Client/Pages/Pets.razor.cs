@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
 using StartinhsMart.CoreService.Pets;
+using StartinhsMart.CoreService.Categories;
 using StartinhsMart.CoreService.Permissions;
 using StartinhsMart.CoreService.Shared;
 using Microsoft.AspNetCore.Components.Forms;
@@ -33,6 +34,9 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
         
         [Inject]
         protected HttpClient Http { get; set; } = default!;
+        
+        [Inject]
+        protected ICategoriesAppService CategoriesAppService { get; set; } = default!;
             
         private IJSObjectReference? _jsObjectRef;
             
@@ -59,6 +63,8 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
         protected string SelectedCreateTab = "pet-create-tab";
         protected string SelectedEditTab = "pet-edit-tab";
         private PetDto? SelectedPet;
+        
+        private IReadOnlyList<CategoryDto> CategoryLookupList { get; set; } = new List<CategoryDto>();
         
         
         
@@ -102,7 +108,7 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             await SetPermissionsAsync();
-            
+            await LoadCategoriesAsync();
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -176,7 +182,7 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
                 culture = "&culture=" + culture;
             }
             await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
-            NavigationManager.NavigateTo($"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/pets/as-excel-file?DownloadToken={token}&FilterText={HttpUtility.UrlEncode(Filter.FilterText)}{culture}&Category={HttpUtility.UrlEncode(Filter.Category)}&Name={HttpUtility.UrlEncode(Filter.Name)}&Breed={HttpUtility.UrlEncode(Filter.Breed)}&AgeMin={Filter.AgeMin}&AgeMax={Filter.AgeMax}&Gender={HttpUtility.UrlEncode(Filter.Gender)}&Color={HttpUtility.UrlEncode(Filter.Color)}&WeightMin={Filter.WeightMin}&WeightMax={Filter.WeightMax}&HealthStatus={HttpUtility.UrlEncode(Filter.HealthStatus)}&VaccinationsMin={Filter.VaccinationsMin}&VaccinationsMax={Filter.VaccinationsMax}&Description={HttpUtility.UrlEncode(Filter.Description)}&PriceMin={Filter.PriceMin}&PriceMax={Filter.PriceMax}&QuantityMin={Filter.QuantityMin}&QuantityMax={Filter.QuantityMax}&IsBooth={Filter.IsBooth}&IsStock={Filter.IsStock}", forceLoad: true);
+            NavigationManager.NavigateTo($"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/pets/as-excel-file?DownloadToken={token}&FilterText={HttpUtility.UrlEncode(Filter.FilterText)}{culture}&CategoryId={Filter.CategoryId}&Name={HttpUtility.UrlEncode(Filter.Name)}&Breed={HttpUtility.UrlEncode(Filter.Breed)}&AgeMin={Filter.AgeMin}&AgeMax={Filter.AgeMax}&Gender={HttpUtility.UrlEncode(Filter.Gender)}&Color={HttpUtility.UrlEncode(Filter.Color)}&WeightMin={Filter.WeightMin}&WeightMax={Filter.WeightMax}&HealthStatus={HttpUtility.UrlEncode(Filter.HealthStatus)}&VaccinationsMin={Filter.VaccinationsMin}&VaccinationsMax={Filter.VaccinationsMax}&Description={HttpUtility.UrlEncode(Filter.Description)}&PriceMin={Filter.PriceMin}&PriceMax={Filter.PriceMax}&QuantityMin={Filter.QuantityMin}&QuantityMax={Filter.QuantityMax}&IsBooth={Filter.IsBooth}&IsStock={Filter.IsStock}", forceLoad: true);
         }
 
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<PetDto> e)
@@ -376,9 +382,9 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
             return $"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/pets/image?ImageId={fileId}";
         }
 
-        protected virtual async Task OnCategoryChangedAsync(string? category)
+        protected virtual async Task OnCategoryChangedAsync(Guid? categoryId)
         {
-            Filter.Category = category;
+            Filter.CategoryId = categoryId;
             await SearchAsync();
         }
         protected virtual async Task OnNameChangedAsync(string? name)
@@ -482,6 +488,23 @@ namespace StartinhsMart.CoreService.Blazor.Client.Pages
             AllPetsSelected = true;
             
             return Task.CompletedTask;
+        }
+
+        private async Task LoadCategoriesAsync()
+        {
+            try
+            {
+                var result = await CategoriesAppService.GetListAsync(new GetCategoriesInput
+                {
+                    MaxResultCount = 1000
+                });
+                CategoryLookupList = result.Items;
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
         }
 
         private Task ClearSelection()

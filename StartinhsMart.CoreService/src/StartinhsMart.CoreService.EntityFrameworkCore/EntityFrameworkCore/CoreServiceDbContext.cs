@@ -100,7 +100,7 @@ public class CoreServiceDbContext :
                     b.ConfigureByConvention();
                     b.Property(x => x.TenantId).HasColumnName(nameof(Pet.TenantId));
                     b.Property(x => x.ImageId).HasColumnName(nameof(Pet.ImageId));
-                    b.Property(x => x.Category).HasColumnName(nameof(Pet.Category));
+                    b.Property(x => x.CategoryId).HasColumnName(nameof(Pet.CategoryId));
                     b.Property(x => x.Name).HasColumnName(nameof(Pet.Name));
                     b.Property(x => x.Breed).HasColumnName(nameof(Pet.Breed));
                     b.Property(x => x.Age).HasColumnName(nameof(Pet.Age));

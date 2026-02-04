@@ -8,7 +8,7 @@ namespace StartinhsMart.CoreService.Pets
     public class PetUpdateDto : IHasConcurrencyStamp
     {
         public Guid? ImageId { get; set; }
-        public string? Category { get; set; }
+        public Guid? CategoryId { get; set; }
         public string? Name { get; set; }
         public string? Breed { get; set; }
         public float? Age { get; set; }

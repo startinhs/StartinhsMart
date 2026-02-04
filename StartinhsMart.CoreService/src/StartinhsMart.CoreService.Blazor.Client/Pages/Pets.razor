@@ -4,6 +4,7 @@
 
 @attribute [Authorize(CoreServicePermissions.Pets.Default)]
 @using StartinhsMart.CoreService.Pets
+@using StartinhsMart.CoreService.Categories
 @using StartinhsMart.CoreService.Localization
 @using StartinhsMart.CoreService.Shared
 @using Microsoft.AspNetCore.Authorization
@@ -83,7 +84,15 @@
                 <Column ColumnSize="ColumnSize.Is3">
                     <Field>
                         <FieldLabel>@L["Category"]</FieldLabel>
-                        <TextEdit Text="@Filter.Category" TextChanged="@OnCategoryChangedAsync" />                       
+                        <Select TValue="Guid?"
+                                SelectedValue="@Filter.CategoryId"
+                                SelectedValueChanged="@OnCategoryChangedAsync">
+                            <SelectItem TValue="Guid?" Value="null">@L["All"]</SelectItem>
+                            @foreach (var category in CategoryLookupList)
+                            {
+                                <SelectItem TValue="Guid?" Value="@category.Id">@category.Name</SelectItem>
+                            }
+                        </Select>
                     </Field>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is3">
@@ -428,8 +437,14 @@
               </DataGridColumn>
 
               <DataGridColumn TItem="PetDto"
-                      Field="Category"
+                      Field="CategoryId"
                       Caption="@L["Category"]">
+                      <DisplayTemplate>
+                        @{
+                          var categoryName = CategoryLookupList.FirstOrDefault(c => c.Id == context.CategoryId)?.Name ?? L["Unknown"].Value;
+                        }
+                        @categoryName
+                      </DisplayTemplate>
               </DataGridColumn>
 
               <DataGridColumn TItem="PetDto"
@@ -574,11 +589,17 @@
                     <Validation MessageLocalizer="@LH.Localize">
                         <Field>
                             <FieldLabel>@L["Category"]</FieldLabel>
-                            <TextEdit @bind-Text="@NewPet.Category"  >
-                                <Feedback>
-                                    <ValidationError />
-                                </Feedback>
-                            </TextEdit>
+                            <Select TValue="Guid?"
+                                    @bind-SelectedValue="@NewPet.CategoryId">
+                                <SelectItem TValue="Guid?" Value="null">@L["SelectCategory"]</SelectItem>
+                                @foreach (var category in CategoryLookupList)
+                                {
+                                    <SelectItem TValue="Guid?" Value="@category.Id">@category.Name</SelectItem>
+                                }
+                            </Select>
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
                         </Field>
                     </Validation>
 
@@ -789,11 +810,17 @@
                     <Validation MessageLocalizer="@LH.Localize">
                         <Field>
                             <FieldLabel>@L["Category"]</FieldLabel>
-                            <TextEdit @bind-Text="@EditingPet.Category"  >
-                                <Feedback>
-                                    <ValidationError />
-                                </Feedback>
-                            </TextEdit>
+                            <Select TValue="Guid?"
+                                    @bind-SelectedValue="@EditingPet.CategoryId">
+                                <SelectItem TValue="Guid?" Value="null">@L["SelectCategory"]</SelectItem>
+                                @foreach (var category in CategoryLookupList)
+                                {
+                                    <SelectItem TValue="Guid?" Value="@category.Id">@category.Name</SelectItem>
+                                }
+                            </Select>
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
                         </Field>
                     </Validation>
 

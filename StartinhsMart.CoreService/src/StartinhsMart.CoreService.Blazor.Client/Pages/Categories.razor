@@ -120,12 +120,12 @@
                         <EntityActions>
                             @if (CanEditCategory)
                             {
-                                <EntityAction IconName="IconName.Edit" Text="@L["Edit"]" 
+                                <EntityAction Icon="IconName.Edit" Text="@L["Edit"]" 
                                             Clicked="@(async () => await OpenEditCategoryModal(context))" />
                             }
                             @if (CanDeleteCategory)
                             {
-                                <EntityAction IconName="IconName.Delete" Text="@L["Delete"]" 
+                                <EntityAction Icon="IconName.Delete" Text="@L["Delete"]" 
                                             Clicked="@(async () => await DeleteCategoryAsync(context))" />
                             }
                         </EntityActions>
@@ -171,6 +171,45 @@
                     <Field>
                         <FieldLabel>@L["Slug"]</FieldLabel>
                         <TextEdit @bind-Text="NewCategory.Slug" MaxLength="256"/>
+                    </Field>
+
+                    <Field>
+                        <FieldLabel>@L["Image"]</FieldLabel>
+                        @if (NewCategory.ImageId != null && NewCategory.ImageId != Guid.Empty)
+                        {
+                            <div class="mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="@GetImageUrl(NewCategory.ImageId!.Value)" 
+                                         alt="Category Image" 
+                                         style="max-width: 150px; max-height: 150px; cursor: pointer;"
+                                         />
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-primary" @onclick="@(async () => await DownloadFileAsync(NewCategory.ImageId!.Value))"><i class="fa fa-file-alt"></i></button>
+                                        <button type="button" class="btn btn-danger" @onclick="(() => { NewCategory.ImageId = Guid.Empty; })"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <InputFile class="form-control" OnChange="@OnNewCategoryImageChanged" accept="image/*"/>
+                            @if (OnNewCategoryImageLoading)
+                            {
+                                <p>@L["FileUploading"]</p>
+                            }
+                            <p class="text-muted pt-1"><i class="fa fa-info-circle"></i> @L["MaxFileSizeLimit", 10]</p>
+                        }
+                    </Field>
+
+                    <Field>
+                        <FieldLabel>@L["ParentCategory"]</FieldLabel>
+                        <Select TValue="Guid?" @bind-SelectedValue="@NewCategory.ParentCategoryId">
+                            <SelectItem Value="@((Guid?)null)">@L["None"]</SelectItem>
+                            @foreach (var parent in ParentCategoryLookupList)
+                            {
+                                <SelectItem Value="@parent.Id">@parent.Name</SelectItem>
+                            }
+                        </Select>
                     </Field>
 
                     <Validation MessageLocalizer="@LH.Localize">
@@ -225,6 +264,45 @@
                     <Field>
                         <FieldLabel>@L["Slug"]</FieldLabel>
                         <TextEdit @bind-Text="EditingCategory.Slug" MaxLength="256"/>
+                    </Field>
+
+                    <Field>
+                        <FieldLabel>@L["Image"]</FieldLabel>
+                        @if (EditingCategory.ImageId != null && EditingCategory.ImageId != Guid.Empty)
+                        {
+                            <div class="mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="@GetImageUrl(EditingCategory.ImageId!.Value)" 
+                                         alt="Category Image" 
+                                         style="max-width: 150px; max-height: 150px; cursor: pointer;"
+                                         />
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-primary" @onclick="@(async () => await DownloadFileAsync(EditingCategory.ImageId!.Value))"><i class="fa fa-file-alt"></i></button>
+                                        <button type="button" class="btn btn-danger" @onclick="(() => { EditingCategory.ImageId = Guid.Empty; })"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <InputFile class="form-control" OnChange="@OnEditCategoryImageChanged" accept="image/*"/>
+                            @if (OnEditCategoryImageLoading)
+                            {
+                                <p>@L["FileUploading"]</p>
+                            }
+                            <p class="text-muted pt-1"><i class="fa fa-info-circle"></i> @L["MaxFileSizeLimit", 10]</p>
+                        }
+                    </Field>
+
+                    <Field>
+                        <FieldLabel>@L["ParentCategory"]</FieldLabel>
+                        <Select TValue="Guid?" @bind-SelectedValue="@EditingCategory.ParentCategoryId">
+                            <SelectItem Value="@((Guid?)null)">@L["None"]</SelectItem>
+                            @foreach (var parent in ParentCategoryLookupList)
+                            {
+                                <SelectItem Value="@parent.Id">@parent.Name</SelectItem>
+                            }
+                        </Select>
                     </Field>
 
                     <Validation MessageLocalizer="@LH.Localize">

@@ -16,8 +16,7 @@ namespace StartinhsMart.CoreService.Pets
 
         public virtual Guid? ImageId { get; set; }
 
-        [CanBeNull]
-        public virtual string? Category { get; set; }
+        public virtual Guid? CategoryId { get; set; }
 
         [CanBeNull]
         public virtual string? Name { get; set; }
@@ -58,14 +57,14 @@ namespace StartinhsMart.CoreService.Pets
             ConcurrencyStamp = Guid.NewGuid().ToString("N");
         }
 
-        public Pet(Guid id, bool isBooth, bool isStock, Guid? imageId = null, string? category = null, string? name = null, string? breed = null, float? age = null, string? gender = null, string? color = null, float? weight = null, string? healthStatus = null, int? vaccinations = null, string? description = null, decimal? price = null, int? quantity = null)
+        public Pet(Guid id, bool isBooth, bool isStock, Guid? imageId = null, Guid? categoryId = null, string? name = null, string? breed = null, float? age = null, string? gender = null, string? color = null, float? weight = null, string? healthStatus = null, int? vaccinations = null, string? description = null, decimal? price = null, int? quantity = null)
         {
             ConcurrencyStamp = Guid.NewGuid().ToString("N");
             Id = id;
             IsBooth = isBooth;
             IsStock = isStock;
             ImageId = imageId;
-            Category = category;
+            CategoryId = categoryId;
             Name = name;
             Breed = breed;
             Age = age;

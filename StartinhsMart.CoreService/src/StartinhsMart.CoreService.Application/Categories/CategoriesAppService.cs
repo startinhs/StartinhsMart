@@ -1,11 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Distributed;
 using StartinhsMart.CoreService.Permissions;
+using StartinhsMart.CoreService.Shared;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.BlobStoring;
+using Volo.Abp.Caching;
+using Volo.Abp.Content;
+using Volo.Abp.Domain.Repositories;
 
 namespace StartinhsMart.CoreService.Categories
 {
@@ -14,13 +21,22 @@ namespace StartinhsMart.CoreService.Categories
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly CategoryManager _categoryManager;
+        protected IDistributedCache<CategoryDownloadTokenCacheItem, string> _downloadTokenCache;
+        protected IRepository<AppFileDescriptors.AppFileDescriptor, Guid> _appFileDescriptorRepository;
+        protected IBlobContainer<CategoryFileContainer> _blobContainer;
 
         public CategoriesAppService(
             ICategoryRepository categoryRepository,
-            CategoryManager categoryManager)
+            CategoryManager categoryManager,
+            IDistributedCache<CategoryDownloadTokenCacheItem, string> downloadTokenCache,
+            IRepository<AppFileDescriptors.AppFileDescriptor, Guid> appFileDescriptorRepository,
+            IBlobContainer<CategoryFileContainer> blobContainer)
         {
             _categoryRepository = categoryRepository;
             _categoryManager = categoryManager;
+            _downloadTokenCache = downloadTokenCache;
+            _appFileDescriptorRepository = appFileDescriptorRepository;
+            _blobContainer = blobContainer;
         }
 
         public virtual async Task<PagedResultDto<CategoryDto>> GetListAsync(GetCategoriesInput input)
@@ -109,6 +125,48 @@ namespace StartinhsMart.CoreService.Categories
         {
             var children = await _categoryRepository.GetChildrenAsync(parentCategoryId);
             return ObjectMapper.Map<List<Category>, List<CategoryDto>>(children);
+        }
+
+        public virtual async Task<IRemoteStreamContent> GetFileAsync(GetFileInput input)
+        {
+            var fileDescriptor = await _appFileDescriptorRepository.GetAsync(input.FileId);
+            var stream = await _blobContainer.GetAsync(fileDescriptor.Id.ToString("N"));
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await stream.CopyToAsync(memoryStream);
+                var fileBytes = memoryStream.ToArray();
+                return new RemoteStreamContent(new MemoryStream(fileBytes), fileDescriptor.Name, fileDescriptor.MimeType);
+            }
+        }
+
+        public virtual async Task<AppFileDescriptorDto> UploadFileAsync(IRemoteStreamContent input)
+        {
+            var id = GuidGenerator.Create();
+            var fileDescriptor = await _appFileDescriptorRepository.InsertAsync(
+                new AppFileDescriptors.AppFileDescriptor(id, input.FileName, input.ContentType));
+
+            await _blobContainer.SaveAsync(fileDescriptor.Id.ToString("N"), input.GetStream());
+
+            return ObjectMapper.Map<AppFileDescriptors.AppFileDescriptor, AppFileDescriptorDto>(fileDescriptor);
+        }
+
+        public virtual async Task<DownloadTokenResultDto> GetDownloadTokenAsync()
+        {
+            var token = Guid.NewGuid().ToString("N");
+
+            await _downloadTokenCache.SetAsync(
+                token,
+                new CategoryDownloadTokenCacheItem { Token = token },
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30)
+                });
+
+            return new DownloadTokenResultDto
+            {
+                Token = token
+            };
         }
     }
 }
