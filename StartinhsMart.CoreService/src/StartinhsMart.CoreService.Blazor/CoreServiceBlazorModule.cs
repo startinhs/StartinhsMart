@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using System.Linq;
 using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
 using Microsoft.AspNetCore.Authentication;
@@ -145,6 +146,28 @@ public class CoreServiceBlazorModule : AbpModule
         ConfigureBlazorise(context);
         ConfigureRouter(context);
         ConfigureMenu(context);
+        ConfigureCors(context, configuration);
+    }
+
+    private void ConfigureCors(ServiceConfigurationContext context, IConfiguration configuration)
+    {
+        context.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(builder =>
+            {
+                builder
+                    .WithOrigins(
+                        configuration["App:CorsOrigins"]?
+                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(o => o.Trim().TrimEnd('/'))
+                            .ToArray() ?? Array.Empty<string>()
+                    )
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
+        });
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
@@ -304,6 +327,7 @@ public class CoreServiceBlazorModule : AbpModule
         
         app.MapAbpStaticAssets();
         app.UseRouting();
+        app.UseCors();
         app.UseAbpSecurityHeaders();
         app.UseAuthentication();
         app.UseAbpOpenIddictValidation();

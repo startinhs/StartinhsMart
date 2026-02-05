@@ -41,6 +41,7 @@ namespace StartinhsMart.CoreService.Pets
             _blobContainer = blobContainer;
         }
 
+        [AllowAnonymous]
         public virtual async Task<PagedResultDto<PetDto>> GetListAsync(GetPetsInput input)
         {
             var totalCount = await _petRepository.GetCountAsync(input.FilterText, input.CategoryId, input.Name, input.Breed, input.AgeMin, input.AgeMax, input.Gender, input.Color, input.WeightMin, input.WeightMax, input.HealthStatus, input.VaccinationsMin, input.VaccinationsMax, input.Description, input.PriceMin, input.PriceMax, input.QuantityMin, input.QuantityMax, input.IsBooth, input.IsStock);
@@ -53,6 +54,7 @@ namespace StartinhsMart.CoreService.Pets
             };
         }
 
+        [AllowAnonymous]
         public virtual async Task<PetDto> GetAsync(Guid id)
         {
             return ObjectMapper.Map<Pet, PetDto>(await _petRepository.GetAsync(id));

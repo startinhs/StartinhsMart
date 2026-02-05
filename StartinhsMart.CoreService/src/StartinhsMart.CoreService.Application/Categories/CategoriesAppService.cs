@@ -39,6 +39,7 @@ namespace StartinhsMart.CoreService.Categories
             _blobContainer = blobContainer;
         }
 
+        [AllowAnonymous]
         public virtual async Task<PagedResultDto<CategoryDto>> GetListAsync(GetCategoriesInput input)
         {
             var totalCount = await _categoryRepository.GetCountAsync(
@@ -67,6 +68,7 @@ namespace StartinhsMart.CoreService.Categories
             };
         }
 
+        [AllowAnonymous]
         public virtual async Task<CategoryDto> GetAsync(Guid id)
         {
             var category = await _categoryRepository.GetAsync(id);
@@ -121,6 +123,7 @@ namespace StartinhsMart.CoreService.Categories
             await _categoryRepository.DeleteAsync(id);
         }
 
+        [AllowAnonymous]
         public virtual async Task<List<CategoryDto>> GetChildrenAsync(Guid parentCategoryId)
         {
             var children = await _categoryRepository.GetChildrenAsync(parentCategoryId);

@@ -635,7 +635,7 @@
         </section>
 
         <script>
-            var swiper = new Swiper('.swiper_welcome', {
+            window.swiper_welcome_init = new Swiper('.swiper_welcome', {
                 slidesPerView: 5,
                 spaceBetween: 30,
                 slidesPerGroup: 1,
@@ -2450,9 +2450,88 @@
                     class=""></path>
             </svg></a>
     </footer>
+    <!-- API Integration Scripts -->
+    <script src="./assets/js/api.js" type="text/javascript"></script>
+    
     <link rel="preload" as="script" href="//bizweb.dktcdn.net/100/432/370/themes/894869/assets/main.js?1676276556806" />
     <script src="//bizweb.dktcdn.net/100/432/370/themes/894869/assets/main.js?1676276556806"
         type="text/javascript"></script>
+    
+    <!-- Initialize Dynamic Product Loading -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Load home categories
+            if ($('.swiper_welcome .swiper-wrapper').length && typeof CategoryRenderer !== 'undefined') {
+                CategoryRenderer.loadCategories('.swiper_welcome .swiper-wrapper', {
+                    MaxResultCount: 10,
+                    Sorting: 'sortOrder asc',
+                    IsActive: true
+                }).then(() => {
+                    if (window.swiper_welcome_init && typeof window.swiper_welcome_init.update === 'function') {
+                        window.swiper_welcome_init.update();
+                    }
+                }).catch(err => {
+                    console.error('Failed to load home categories:', err);
+                });
+            }
+
+            // Load promotional products (products with discounts)
+            if ($('.swiper_bestsale .swiper-wrapper').length) {
+                ProductRenderer.loadProducts('.swiper_bestsale .swiper-wrapper', {
+                    MaxResultCount: 10,
+                    Sorting: 'price desc' // Sort by price descending to get higher value items
+                }).then(() => {
+                    // Re-initialize swiper after products are loaded
+                    if (typeof swiper_bestsale_init !== 'undefined') {
+                        var swiper_bestsale_init = new Swiper('.swiper_bestsale', {
+                            slidesPerView: 4,
+                            spaceBetween: 30,
+                            slidesPerGroup: 1,
+                            navigation: {
+                                nextEl: '#next-bestsale',
+                                prevEl: '#prev-bestsale',
+                            },
+                            breakpoints: {
+                                300: { slidesPerView: 1, spaceBetween: 30 },
+                                500: { slidesPerView: 1, spaceBetween: 30 },
+                                640: { slidesPerView: 1, spaceBetween: 30 },
+                                768: { slidesPerView: 3, spaceBetween: 30 },
+                                992: { slidesPerView: 4, spaceBetween: 30 },
+                                1200: { slidesPerView: 4, spaceBetween: 30 }
+                            }
+                        });
+                    }
+                }).catch(err => {
+                    console.error('Failed to load promotional products:', err);
+                });
+            }
+            
+            // Load best-selling products
+            if ($('.swiper_accessories .swiper-wrapper').length) {
+                ProductRenderer.loadProducts('.swiper_accessories .swiper-wrapper', {
+                    MaxResultCount: 10,
+                    Sorting: 'name asc'
+                }).then(() => {
+                    resizeImage();
+                }).catch(err => {
+                    console.error('Failed to load best-selling products:', err);
+                });
+            }
+            
+            // Load all shop products
+            if ($('.swiper_tab_product .swiper-wrapper').length) {
+                ProductRenderer.loadProducts('.swiper_tab_product .swiper-wrapper', {
+                    MaxResultCount: 20,
+                    Sorting: 'creationTime desc'
+                }).then(() => {
+                    resizeImage();
+                }).catch(err => {
+                    console.error('Failed to load shop products:', err);
+                });
+            }
+        });
+    </script>
+    
     <div id="popupCartModal" class="modal fade" role="dialog"></div>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
